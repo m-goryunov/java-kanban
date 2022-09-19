@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TaskManager {
     Scanner scanner = new Scanner(System.in);
@@ -8,8 +9,8 @@ public class TaskManager {
     HashMap<Integer, Object> epics = new HashMap<>();
 
     Integer generateID(){
-        Integer id = 0;
-        id++;
+        AtomicInteger atomicInteger = new AtomicInteger();
+        int id = atomicInteger.incrementAndGet();
         return id;
     }
 
@@ -23,7 +24,10 @@ public class TaskManager {
         Task task = new Task(name,description,status,ID);
         tasks.put(ID,task);
     }
-    void updateTask(){
+    void updateTask(Task task){
+        System.out.println("Введите ID обновляемой задачи: ");
+        int ID = scanner.nextInt();
+        if (tasks.containsKey(ID)){tasks.put(ID,task);}
 
     }
 }
