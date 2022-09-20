@@ -1,33 +1,51 @@
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TaskManager {
     Scanner scanner = new Scanner(System.in);
-    HashMap<Integer, Object> tasks = new HashMap<>();
-    HashMap<Integer, Object> subTasks = new HashMap<>();
-    HashMap<Integer, Object> epics = new HashMap<>();
+    Map<Integer, Object> tasks = new HashMap<>();
+    Map<Integer, Object> subTasks = new HashMap<>();
+    Map<Integer, Object> epics = new HashMap<>();
 
-    Integer generateID(){
+    public Integer getID(){
         AtomicInteger atomicInteger = new AtomicInteger();
         int id = atomicInteger.incrementAndGet();
         return id;
     }
 
-    void createTask(){
-        System.out.println("Введите название:");
-        String name = scanner.next();
-        System.out.println("Введите описание:");
-        String description = scanner.next();
-        String status = "NEW";
-        Integer ID = generateID();
-        Task task = new Task(name,description,status,ID);
+    void createTask(String initialName, String initialDescription, String initialStatus, Integer initialID){
+        Task task = new Task(initialName,initialDescription,initialStatus,initialID);
+        Integer ID = getID();
         tasks.put(ID,task);
     }
-    void updateTask(Task task){
-        System.out.println("Введите ID обновляемой задачи: ");
-        int ID = scanner.nextInt();
-        if (tasks.containsKey(ID)){tasks.put(ID,task);}
 
+    void updateTask(int ID, Task task) {
+        if (tasks.containsKey(ID)) {
+            tasks.put(ID, task);
+        } else {
+            System.out.println("Такой ID не существует.");
+        }
+    }
+
+    void printAllTasks(){
+        for (Map.Entry<Integer, Object> entry: tasks.entrySet()){
+            Integer ID = entry.getKey();
+            Object task = entry.getValue();
+            System.out.println("ID: " + ID + "\n" + task);
+        }
+    }
+
+    void deleteAllTasks(){
+        tasks.clear();
+    }
+
+    void printTaskByID(int ID){
+        System.out.println(tasks.get(ID));
+    }
+
+    void deleteTaskByID(int ID){
+        tasks.remove(ID);
     }
 }
