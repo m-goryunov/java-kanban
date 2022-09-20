@@ -1,13 +1,20 @@
 public class SubTask extends Task {
 
-    protected String name = "Сабтаска";
-    protected String description = "Полить цветочек";
-    protected String status = "NEW";
-    protected Integer ID = null;
-    protected Integer epicID = null;
+    protected Integer epicID;
 
-
-    public SubTask(String name, String description, String status, Integer ID) {
+    public SubTask(String name, String description, String status, Integer ID, Integer epicID) {
         super(name, description, status, ID);
+        this.epicID = epicID;
+    }
+
+    @Override
+    public String toString() {
+        return "SubTask{" +
+                "epicID=" + epicID +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                ", ID=" + ID +
+                '}';
     }
 }
