@@ -9,13 +9,6 @@ public class Epic extends Task{
         this.epicStatus = status;
     }
 
-    public Integer getEpicID() {
-        return epicID;
-    }
-
-    public String getEpicStatus() {
-        return epicStatus;
-    }
 
     public void setEpicStatus(String epicStatus) {
         this.epicStatus = epicStatus;

@@ -6,7 +6,7 @@ public class TaskManager {
     Map<Integer, Epic> epics = new HashMap<>();
 
     public Integer getID() {
-        return new Random().nextInt(1000);
+        return new Random().nextInt(1000); //Коллизия, но шанс мал.
     }
 
     void createTask(Task task) {
@@ -34,11 +34,19 @@ public class TaskManager {
     }
 
     void printTaskByID(int ID) {
-        System.out.println(tasks.get(ID));
+        if(tasks.containsKey(ID)) {
+            System.out.println(tasks.get(ID));
+        } else {
+            System.out.println("Такой ID не существует!");
+        }
     }
 
     void deleteTaskByID(int ID) {
-        tasks.remove(ID);
+        if(tasks.containsKey(ID)) {
+            tasks.remove(ID);
+        } else {
+            System.out.println("Такой ID не существует!");
+        }
     }
 
     void createSubTask(SubTask subTask, Integer epicID) {
@@ -65,11 +73,11 @@ public class TaskManager {
         for (SubTask subTask : subTasks.values()) {
             for (Epic epic: epics.values()) {
                 if (subTask.status == "NEW" && epicID == epic.ID) {
-                   epic.setEpicStatus("NEW");
-                } else if (subTask.status == "DONE" && epicID == epic.ID) {
-                    epic.setEpicStatus("DONE");
+                    epics.get(epicID).setEpicStatus("NEW");
+                } if (subTask.status == "DONE" && epicID == epic.ID) {
+                    epics.get(epicID).setEpicStatus("DONE");
                 } else {
-                    epic.setEpicStatus("IN PROGRESS");
+                    epics.get(epicID).setEpicStatus("IN PROGRESS");
                 }
             }
         }
@@ -100,11 +108,19 @@ public class TaskManager {
     }
 
     void printSubTaskByID(int ID) {
-        System.out.println(subTasks.get(ID));
+        if (subTasks.containsKey(ID)) {
+            System.out.println(subTasks.get(ID));
+        } else {
+            System.out.println("Такой ID не существует!");
+        }
     }
 
     void deleteSubTaskByID(int ID) {
-        subTasks.remove(ID);
+        if(subTasks.containsKey(ID)) {
+            subTasks.remove(ID);
+        } else {
+            System.out.println("Такой ID не существует!");
+        }
     }
 
     void createEpic(Epic epic) {
@@ -133,11 +149,19 @@ public class TaskManager {
     }
 
     void printEpicByID(int ID) {
-        System.out.println(epics.get(ID));
+        if(epics.containsKey(ID)) {
+            System.out.println(epics.get(ID));
+        } else {
+            System.out.println("Такой ID не существует!");
+        }
     }
 
     void deleteEpicByID(int ID) {
-        epics.remove(ID);
+        if(epics.containsKey(ID)) {
+            epics.remove(ID);
+        } else {
+            System.out.println("Такой ID не существует!");
+        }
     }
 
     void getAllSubtasksByEpic(int ID) {

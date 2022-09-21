@@ -35,9 +35,10 @@ public class Main {
                     }
                     break;
                 case 3:
-                    System.out.println("Какую задачу показать? \n 1. Таски \n 2. Эпики \n 3. Сабтаски");
+
                     System.out.println("Введите ID");
                     int printID = scanner.nextInt();
+                    System.out.println("Какую задачу показать? \n 1. Таски \n 2. Эпики \n 3. Сабтаски");
                     switch (scanner.nextInt()) {
                         case 1:
                             taskManager.printTaskByID(printID);
@@ -77,7 +78,7 @@ public class Main {
                                     , "IN PROGRESS", updateID));
                             break;
                         case 2:
-                            System.out.println("Введите ID Эпика");
+                            System.out.println("К какому эпику присвоить?");
                             Integer newEpicID = scanner.nextInt();
                             taskManager.updateSubTask(updateID, new SubTask("Новое название"
                                     , "Новое описание"
