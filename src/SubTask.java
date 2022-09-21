@@ -1,9 +1,17 @@
 public class SubTask extends Task {
 
-    protected Integer epicID;
+    private Integer epicID;
 
     public SubTask(String name, String description, String status, Integer ID, Integer epicID) {
         super(name, description, status, ID);
+        this.epicID = epicID;
+    }
+
+    public Integer getEpicID() {
+        return epicID;
+    }
+
+    public void setEpicID(Integer epicID) {
         this.epicID = epicID;
     }
 

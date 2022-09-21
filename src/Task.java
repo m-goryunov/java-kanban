@@ -12,13 +12,6 @@ public class Task {
         this.ID = ID;
     }
 
-/*    public void setID(Integer ID) {
-        this.ID = ID;
-    }
-
-    public Integer getID() {
-        return ID;
-    }*/
 
     @Override
     public String toString() {

@@ -1,18 +1,30 @@
 public class Epic extends Task{
 
-    protected Integer epicID;
+    private Integer epicID;
+    private String epicStatus;
 
-    public Epic(String name, String description, String status, Integer ID, Integer epicID) {
+    public Epic(String name, String description, String status, Integer ID) {
         super(name, description, status, ID);
-        this.epicID = epicID;
-        this.ID = epicID;
+        this.epicID = ID;
+        this.epicStatus = status;
+    }
+
+    public Integer getEpicID() {
+        return epicID;
+    }
+
+    public String getEpicStatus() {
+        return epicStatus;
+    }
+
+    public void setEpicStatus(String epicStatus) {
+        this.epicStatus = epicStatus;
     }
 
     @Override
     public String toString() {
         return "Epic{" +
-                "epicID=" + epicID +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", ID=" + ID +
