@@ -1,4 +1,4 @@
-public class Epic extends Task{
+public class Epic extends Task {
 
     private Integer epicID;
     private String epicStatus;

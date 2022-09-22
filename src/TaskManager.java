@@ -6,7 +6,7 @@ public class TaskManager {
     Map<Integer, Epic> epics = new HashMap<>();
 
     public Integer getID() {
-        return new Random().nextInt(1000); //Коллизия, но шанс мал.
+        return new Random().nextInt(1000); //Коллизия, но шанс мал. Не стал юзать UUID.
     }
 
     void createTask(Task task) {
@@ -34,7 +34,7 @@ public class TaskManager {
     }
 
     void printTaskByID(int ID) {
-        if(tasks.containsKey(ID)) {
+        if (tasks.containsKey(ID)) {
             System.out.println(tasks.get(ID));
         } else {
             System.out.println("Такой ID не существует!");
@@ -42,7 +42,7 @@ public class TaskManager {
     }
 
     void deleteTaskByID(int ID) {
-        if(tasks.containsKey(ID)) {
+        if (tasks.containsKey(ID)) {
             tasks.remove(ID);
         } else {
             System.out.println("Такой ID не существует!");
@@ -71,28 +71,17 @@ public class TaskManager {
 
     void updateEpicStatus(Integer epicID) {
         for (SubTask subTask : subTasks.values()) {
-            for (Epic epic: epics.values()) {
-                if (subTask.status == "NEW" && epicID == epic.ID) {
-                    epics.get(epicID).setEpicStatus("NEW");
-                } if (subTask.status == "DONE" && epicID == epic.ID) {
-                    epics.get(epicID).setEpicStatus("DONE");
+            for (Epic epic : epics.values()) {
+                if (subTask.status == "NEW") {
+                    epics.put(epicID, new Epic(epic.name, epic.description, "NEW", epicID));
+                } else if (subTask.status == "DONE") {
+                    epics.put(epicID, new Epic(epic.name, epic.description, "DONE", epicID));
                 } else {
-                    epics.get(epicID).setEpicStatus("IN PROGRESS");
+                    epics.put(epicID, new Epic(epic.name, epic.description, "IN PROGRESS", epicID));
                 }
             }
         }
     }
-
-
-    /*
-    Если у эпика нет подзадач или все они имеют статус NEW, то статус должен быть NEW.
-    Если все подзадачи имеют статус DONE, то и эпик считается завершённым — со статусом DONE.
-    Во всех остальных случаях статус должен быть IN_PROGRESS.
-2. Когда меняется статус любой подзадачи в эпике, вам необходимо проверить,
-     что статус эпика изменится соответствующим образом.
-     При этом изменение статуса эпика может и не произойти,
-     если в нём, к примеру, всё ещё есть незакрытые задачи.*/
-
 
     void printAllSubTasks() {
         for (Map.Entry<Integer, SubTask> entry : subTasks.entrySet()) {
@@ -104,7 +93,9 @@ public class TaskManager {
 
     void deleteAllSubTasks() {
         subTasks.clear();
-        //Статус Эпика!!!
+        for (Epic epic : epics.values()) {
+            epic.setEpicStatus("NEW");
+        }
     }
 
     void printSubTaskByID(int ID) {
@@ -116,7 +107,7 @@ public class TaskManager {
     }
 
     void deleteSubTaskByID(int ID) {
-        if(subTasks.containsKey(ID)) {
+        if (subTasks.containsKey(ID)) {
             subTasks.remove(ID);
         } else {
             System.out.println("Такой ID не существует!");
@@ -149,7 +140,7 @@ public class TaskManager {
     }
 
     void printEpicByID(int ID) {
-        if(epics.containsKey(ID)) {
+        if (epics.containsKey(ID)) {
             System.out.println(epics.get(ID));
         } else {
             System.out.println("Такой ID не существует!");
@@ -157,7 +148,7 @@ public class TaskManager {
     }
 
     void deleteEpicByID(int ID) {
-        if(epics.containsKey(ID)) {
+        if (epics.containsKey(ID)) {
             epics.remove(ID);
         } else {
             System.out.println("Такой ID не существует!");
@@ -173,8 +164,5 @@ public class TaskManager {
             }
             System.out.println(subTasksByEpic);
         }
-
     }
-
-
 }

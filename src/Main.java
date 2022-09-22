@@ -7,7 +7,7 @@ public class Main {
 
         Task task1 = new Task("Тасочка", "Доработать АС", "NEW", null);
         SubTask subTask1 = new SubTask("Сабтаска1", "Техдолг Q1", "NEW", null, null);
-        SubTask subTask2 = new SubTask("Сабтаска2", "Техдолг Q2", "IN PROGRESS", null, null);
+        SubTask subTask2 = new SubTask("Сабтаска2", "Техдолг Q2", "NEW", null, null);
         SubTask subTask3 = new SubTask("Сабтаска3", "Техдолг Q3", "DONE", null, null);
         Epic epic1 = new Epic("Самый важный ППР", "Доля прокрастинации сотрудников < 90 б.п.", "NEW", null);
 
