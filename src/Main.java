@@ -1,18 +1,19 @@
-import javax.print.attribute.SupportedValuesAttribute;
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        Task task1 = new Task("Тасочка", "Доработать АС", "NEW", null);
-        SubTask subTask1 = new SubTask("Сабтаска1", "Техдолг Q1", "NEW", null, null);
-        SubTask subTask2 = new SubTask("Сабтаска2", "Техдолг Q2", "NEW", null, null);
-        SubTask subTask3 = new SubTask("Сабтаска3", "Техдолг Q3", "DONE", null, null);
-        Epic epic1 = new Epic("Самый важный ППР", "Доля прокрастинации сотрудников < 90 б.п.", "NEW", null);
+        Task task1 = new Task("Тасочка", "Доработать АС", TaskStatus.NEW, null);
+        SubTask subTask1 = new SubTask("Сабтаска1", "Техдолг Q1", TaskStatus.NEW, null, null);
+        SubTask subTask2 = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, null);
+        SubTask subTask3 = new SubTask("Сабтаска3", "Техдолг Q3", TaskStatus.NEW, null, null);
+        Epic epic1 = new Epic("Самый важный ППР", "Доля прокрастинации сотрудников < 90 б.п.",
+                                                                                                TaskStatus.NEW, null);
 
         Scanner scanner = new Scanner(System.in);
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = new InMemoryTaskManager();
+
         printMenu();
         while (true) {
             switch (scanner.nextInt()) {
@@ -75,20 +76,20 @@ public class Main {
                         case 1:
                             taskManager.updateTask(updateID, new Task("Новое название"
                                     , "Новое описание"
-                                    , "IN PROGRESS", updateID));
+                                    , TaskStatus.IN_PROGRESS, updateID));
                             break;
                         case 2:
                             System.out.println("К какому эпику присвоить?");
                             Integer newEpicID = scanner.nextInt();
                             taskManager.updateSubTask(updateID, new SubTask("Новое название"
                                     , "Новое описание"
-                                    , "IN PROGRESS"
+                                    , TaskStatus.IN_PROGRESS
                                     , updateID, newEpicID));
                             break;
                         case 3:
                             taskManager.updateEpic(updateID, new Epic("Новое название"
                                     , "Новое описание"
-                                    , "IN PROGRESS"
+                                    , TaskStatus.IN_PROGRESS
                                     , updateID));
                             break;
                     }
@@ -115,6 +116,10 @@ public class Main {
                     int epicSubtasksIds = scanner.nextInt();
                     taskManager.getAllSubtasksByEpic(epicSubtasksIds);
                     break;
+
+                case 8:
+                    System.out.println(taskManager.getHistory());
+                    break;
                 case 0:
                     break;
                 default:
@@ -127,6 +132,7 @@ public class Main {
     private static void printMenu() {
         System.out.println(" 1. Получить список всех задач\n 2. Удалить все задачи "
                 + "\n 3. Получить задачу по идентификатору \n 4. Создать задачу \n 5. Обновить задачу "
-                + "\n 6. Удалить задачу по идентификатору \n 7. Получить Подзадачи по Эпику");
+                + "\n 6. Удалить задачу по идентификатору \n 7. Получить Подзадачи по Эпику" +
+                "\n 8. Посмотреть историю просмотров");
     }
 }

@@ -1,16 +1,16 @@
 public class Epic extends Task {
 
     private Integer epicID;
-    private String epicStatus;
+    private TaskStatus epicStatus;
 
-    public Epic(String name, String description, String status, Integer ID) {
+    public Epic(String name, String description, TaskStatus status, Integer ID) {
         super(name, description, status, ID);
         this.epicID = ID;
         this.epicStatus = status;
     }
 
 
-    public void setEpicStatus(String epicStatus) {
+    public void setEpicStatus(TaskStatus epicStatus) {
         this.epicStatus = epicStatus;
     }
 

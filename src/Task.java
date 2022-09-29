@@ -2,10 +2,10 @@
 public class Task {
     protected String name;
     protected String description;
-    protected String status;
+    protected TaskStatus status;
     protected Integer ID;
 
-    public Task(String name, String description, String status, Integer ID) {
+    public Task(String name, String description, TaskStatus status, Integer ID) {
         this.name = name;
         this.description = description;
         this.status = status;
