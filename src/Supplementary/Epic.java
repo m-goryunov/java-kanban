@@ -1,3 +1,5 @@
+package Supplementary;
+
 public class Epic extends Task {
 
     private Integer epicID;
@@ -16,7 +18,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epic{" +
+        return "Supplementary.Epic{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +

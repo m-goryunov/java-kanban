@@ -1,3 +1,10 @@
+package Primary;
+
+import Supplementary.Epic;
+import Supplementary.SubTask;
+import Supplementary.Task;
+import Supplementary.TaskStatus;
+
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -5,11 +12,10 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, SubTask> subTasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     //Managers manager = new Managers();
-    //HistoryManager historyManager = new InMemoryHistoryManager();
-    private final Deque<Task> history = new LinkedList<>(); // Наставник сказал, что хистори должна
-                                                            // храниться здесь, как и её методы
+    //Primary.HistoryManager historyManager = new Primary.InMemoryHistoryManager();
+    private final Deque<Task> history = new LinkedList<>();
     private Integer getID() {
-        return new Random().nextInt(1000); //Коллизия, но шанс мал. Не стал юзать UUID.
+        return new Random().nextInt(1000);
     }
 
     private Deque<Task> add(Task task) {
@@ -156,7 +162,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllEpics() {
         epics.clear();
-        subTasks.clear(); //не может существовать без Epic
+        subTasks.clear(); //не может существовать без Supplementary.Epic
     }
     @Override
     public void printEpicByID(int ID) {

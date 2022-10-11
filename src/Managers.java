@@ -1,3 +1,8 @@
+import Primary.HistoryManager;
+import Primary.InMemoryHistoryManager;
+import Primary.InMemoryTaskManager;
+import Primary.TaskManager;
+
 public class Managers {
 
     public static TaskManager getDefault(){

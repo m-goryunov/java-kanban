@@ -1,3 +1,5 @@
+package Supplementary;
+
 public class SubTask extends Task {
 
     private Integer epicID;
@@ -17,7 +19,7 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return "SubTask{" +
+        return "Supplementary.SubTask{" +
                 "epicID=" + epicID +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +

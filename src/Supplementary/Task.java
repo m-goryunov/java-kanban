@@ -1,9 +1,10 @@
+package Supplementary;
 
 public class Task {
-    protected String name;
-    protected String description;
-    protected TaskStatus status;
-    protected Integer ID;
+    public String name;
+    public String description;
+    public TaskStatus status;
+    public Integer ID;
 
     public Task(String name, String description, TaskStatus status, Integer ID) {
         this.name = name;
@@ -15,7 +16,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "Supplementary.Task{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +

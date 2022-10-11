@@ -1,3 +1,7 @@
+package Primary;
+
+import Supplementary.Task;
+
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -15,6 +19,12 @@ public class InMemoryHistoryManager implements HistoryManager {
         history.addLast(task);
         return history;
     }
+
+    public Deque<Task> remove(Task task){ // при удалении задачи так же удалять её из истории просмотров
+        return null;
+    }
+
+
     @Override
     public Deque<Task> getHistory(){
         return history;
