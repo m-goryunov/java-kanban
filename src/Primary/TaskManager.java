@@ -26,5 +26,4 @@ public interface TaskManager {
     void printEpicByID(int ID);
     void deleteEpicByID(int ID);
     void getAllSubtasksByEpic(int ID);
-    Deque<Task> getHistory();
 }

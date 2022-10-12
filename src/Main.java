@@ -1,3 +1,5 @@
+import Primary.HistoryManager;
+import Primary.InMemoryHistoryManager;
 import Primary.InMemoryTaskManager;
 import Primary.TaskManager;
 import Supplementary.Epic;
@@ -20,6 +22,7 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
         TaskManager taskManager = new InMemoryTaskManager();
+        HistoryManager historyManager = new InMemoryHistoryManager();
 
         printMenu();
         while (true) {
@@ -125,7 +128,7 @@ public class Main {
                     break;
 
                 case 8:
-                    System.out.println(taskManager.getHistory());
+                    System.out.println(historyManager.getHistory());
                     break;
                 case 0:
                     break;

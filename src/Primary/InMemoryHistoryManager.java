@@ -7,25 +7,23 @@ import java.util.LinkedList;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private Deque<Task> history = new LinkedList<>();
+    public Deque<Task> history = new LinkedList<>();
 
 
-    // тут пустышка получается. Пока плохо понимаю, зачем этот класс...
-    @Override
-    public Deque<Task> add(Task task) {
+
+    public void add(Task task) {
         if(history.size() >= 10){
             history.removeFirst();
         }
         history.addLast(task);
-        return history;
+        System.out.println(history);
+        //return history;
     }
 
     public Deque<Task> remove(Task task){ // при удалении задачи так же удалять её из истории просмотров
         return null;
     }
 
-
-    @Override
     public Deque<Task> getHistory(){
         return history;
     }

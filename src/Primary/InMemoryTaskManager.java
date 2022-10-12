@@ -11,14 +11,15 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, SubTask> subTasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
-    //Managers manager = new Managers();
-    //Primary.HistoryManager historyManager = new Primary.InMemoryHistoryManager();
-    private final Deque<Task> history = new LinkedList<>();
+//    private final Deque<Task> history = new LinkedList<>();
+    HistoryManager historyManager = new InMemoryHistoryManager();
+
+
     private Integer getID() {
         return new Random().nextInt(1000);
     }
 
-    private Deque<Task> add(Task task) {
+/*    private Deque<Task> add(Task task) {
         if(history.size() >= 10){
             history.removeFirst();
         }
@@ -27,9 +28,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
     public Deque<Task> getHistory(){
         return history;
-    }
-
-
+    }*/
 
     @Override
     public void createTask(Task task) {
@@ -59,8 +58,9 @@ public class InMemoryTaskManager implements TaskManager {
     public void printTaskByID(int ID) {
         if (tasks.containsKey(ID)) {
             System.out.println(tasks.get(ID));
-            add(tasks.get(ID)); // делаю так, по наставлению наставника
-            // а не так manager.getDefaultHistory().add(tasks.get(ID));
+//            add(tasks.get(ID));
+            historyManager.add(tasks.get(ID));
+
         } else {
             System.out.println("Такой ID не существует!");
         }
@@ -126,7 +126,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void printSubTaskByID(int ID) {
         if (subTasks.containsKey(ID)) {
             System.out.println(subTasks.get(ID));
-            add(tasks.get(ID));
+//            add(tasks.get(ID));
         } else {
             System.out.println("Такой ID не существует!");
         }
@@ -162,13 +162,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllEpics() {
         epics.clear();
-        subTasks.clear(); //не может существовать без Supplementary.Epic
+        subTasks.clear(); //не может существовать без Epic
     }
     @Override
     public void printEpicByID(int ID) {
         if (epics.containsKey(ID)) {
             System.out.println(epics.get(ID));
-            add(tasks.get(ID));
+//            add(tasks.get(ID));
         } else {
             System.out.println("Такой ID не существует!");
         }
