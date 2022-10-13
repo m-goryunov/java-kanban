@@ -1,7 +1,4 @@
-import Primary.HistoryManager;
-import Primary.InMemoryHistoryManager;
-import Primary.InMemoryTaskManager;
-import Primary.TaskManager;
+package Primary;
 
 public class Managers {
 

@@ -128,7 +128,7 @@ public class Main {
                     break;
 
                 case 8:
-                    System.out.println(historyManager.getHistory());
+                    historyManager.getHistory();
                     break;
                 case 0:
                     break;

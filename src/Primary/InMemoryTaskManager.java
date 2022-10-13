@@ -11,24 +11,14 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, SubTask> subTasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
-//    private final Deque<Task> history = new LinkedList<>();
+    private Integer ID = 0;
     HistoryManager historyManager = new InMemoryHistoryManager();
 
 
     private Integer getID() {
-        return new Random().nextInt(1000);
+        return ++ID;
     }
 
-/*    private Deque<Task> add(Task task) {
-        if(history.size() >= 10){
-            history.removeFirst();
-        }
-        history.addLast(task);
-        return history;
-    }
-    public Deque<Task> getHistory(){
-        return history;
-    }*/
 
     @Override
     public void createTask(Task task) {
@@ -58,8 +48,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void printTaskByID(int ID) {
         if (tasks.containsKey(ID)) {
             System.out.println(tasks.get(ID));
-//            add(tasks.get(ID));
             historyManager.add(tasks.get(ID));
+            historyManager.getHistory();
 
         } else {
             System.out.println("Такой ID не существует!");
