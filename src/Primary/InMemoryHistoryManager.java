@@ -10,15 +10,18 @@ public class InMemoryHistoryManager implements HistoryManager {
     private final Deque<Task> history = new LinkedList<>();
 
     Map <Integer, Object> NodeMap = new HashMap<>();
-
+    private final CustomLinkedList<Object> linkedHistory = new CustomLinkedList<>();
 
     @Override
     public void add(Task task) {
-        if(history.size() >= 10){
+        linkedHistory.linkLast(task);
+
+
+       /* if(history.size() >= 10){
             history.removeFirst();
         }
         history.addLast(task);
-        System.out.println(history);
+        System.out.println(history);*/
     }
     @Override
     public void remove(Task task){ // при удалении задачи так же удалять её из истории просмотров
@@ -26,7 +29,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
     @Override
     public Deque<Task> getHistory(){
-        return history;
+        return linkedHistory.getTasks();
     }
 }
 
@@ -48,18 +51,7 @@ class CustomLinkedList<T> {
     private Node<T> tail;
     private int size = 0;
 
-    public void addFirst(T element) {
-        final Node<T> oldHead = head;
-        final Node<T> newNode = new Node<>(null, element, oldHead);
-        head = newNode;
-        if (oldHead == null)
-            tail = newNode;
-        else
-            oldHead.prev = newNode;
-        size++;
-    }
-
-    public void addLast(T element) {
+    public void linkLast(T element) {
         final Node<T> oldTail = tail;
         final Node<T> newNode = new Node<>(tail, element, null);
         tail = newNode;
@@ -72,7 +64,14 @@ class CustomLinkedList<T> {
         size++;
     }
 
-    public T getFirst() {
+    public void getTasks(CustomLinkedList<T> tasks){
+        List<Task> simpleList = new ArrayList<>();
+        simpleList.addAll((Collection<? extends Task>) tasks);
+        return simpleList;
+    }
+
+
+  /*  public T getFirst() {
         final Node<T> curHead = head;
         if (curHead == null)
             throw new NoSuchElementException();
@@ -80,7 +79,6 @@ class CustomLinkedList<T> {
     }
 
     public T getLast() {
-        // Реализуйте метод
         final Node<T> curTail = tail;
         if (curTail == null)
             throw new NoSuchElementException();
@@ -90,4 +88,14 @@ class CustomLinkedList<T> {
     public int size() {
         return this.size;
     }
+    public void addFirst(T element) {
+        final Node<T> oldHead = head;
+        final Node<T> newNode = new Node<>(null, element, oldHead);
+        head = newNode;
+        if (oldHead == null)
+            tail = newNode;
+        else
+            oldHead.prev = newNode;
+        size++;
+    }*/
 }
