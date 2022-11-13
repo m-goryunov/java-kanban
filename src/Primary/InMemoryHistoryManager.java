@@ -1,39 +1,30 @@
 package Primary;
-
 import Supplementary.Task;
 import java.util.*;
 
-// Избавиться от повторных просмотров в Истории просмотров и ограничения на размер истории.
-
 public class InMemoryHistoryManager implements HistoryManager {
-
-    private final Deque<Task> history = new LinkedList<>();
-
-    Map <Integer, Object> NodeMap = new HashMap<>();
-    private final CustomLinkedList<Object> linkedHistory = new CustomLinkedList<>();
+    private final List<Task> history = new ArrayList<>();
+    private final Map <Integer, Object> nodeMap = new HashMap<>();
 
     @Override
-    public void add(Task task) {
-        linkedHistory.linkLast(task);
-
-
-       /* if(history.size() >= 10){
-            history.removeFirst();
+    public void add(Task task) { // Избавиться от повторных просмотров в Истории просмотров и ограничения на размер истории.
+        if(nodeMap.containsKey(task.ID)){ //если уже сожержит - удаляем старую, записываем новую
+            nodeMap.remove(task.ID);
+            linkLast(task);
+        } else {
+            linkLast(task); // если нет - просто записываем новую
         }
-        history.addLast(task);
-        System.out.println(history);*/
     }
     @Override
-    public void remove(Task task){ // при удалении задачи так же удалять её из истории просмотров
+    public void remove(int id){ // при удалении задачи так же удалять её из истории просмотров
 
     }
     @Override
-    public Deque<Task> getHistory(){
-        return linkedHistory.getTasks();
+    public List<Task> getHistory(){
+        return getTasks();
     }
-}
 
-class CustomLinkedList<T> {
+
 
     class Node<E> {
         public E data;
@@ -47,13 +38,13 @@ class CustomLinkedList<T> {
         }
     }
 
-    private Node<T> head;
-    private Node<T> tail;
+    private Node<Task> head;
+    private Node<Task> tail;
     private int size = 0;
 
-    public void linkLast(T element) {
-        final Node<T> oldTail = tail;
-        final Node<T> newNode = new Node<>(tail, element, null);
+    public void linkLast(Task task) {
+        final Node<Task> oldTail = tail;
+        final Node<Task> newNode = new Node<>(tail, task, null);
         tail = newNode;
         if (oldTail == null) {
             oldTail.next = newNode;
@@ -62,14 +53,18 @@ class CustomLinkedList<T> {
             head = newNode;
         }
         size++;
+        nodeMap.put(task.ID, newNode);
     }
 
-    public void getTasks(CustomLinkedList<T> tasks){
-        List<Task> simpleList = new ArrayList<>();
-        simpleList.addAll((Collection<? extends Task>) tasks);
-        return simpleList;
+    public List<Task> getTasks(){
+        history.
     }
 
+    public void removeNode(Node node){
+
+    }
+
+}
 
   /*  public T getFirst() {
         final Node<T> curHead = head;
@@ -98,4 +93,10 @@ class CustomLinkedList<T> {
             oldHead.prev = newNode;
         size++;
     }*/
-}
+
+
+       /* if(history.size() >= 10){
+            history.removeFirst();
+        }
+        history.addLast(task);
+        System.out.println(history);*/

@@ -2,13 +2,14 @@ package Primary;
 
 import Supplementary.Task;
 import java.util.Deque;
+import java.util.List;
 
 public interface HistoryManager {
 
     void add(Task task);
 
-    void remove(Task task);
+    void remove(int id);
 
-    Deque<Task> getHistory();
+    List<Task> getHistory(); //старая реализация
 
 }
