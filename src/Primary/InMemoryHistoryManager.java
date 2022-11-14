@@ -1,14 +1,15 @@
 package Primary;
+import Supplementary.Node;
 import Supplementary.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final List<Task> history = new ArrayList<>();
-    private final Map <Integer, Object> nodeMap = new HashMap<>();
+    private final Map <Integer, Node> nodeMap = new HashMap<>();
 
     @Override
     public void add(Task task) { // Избавиться от повторных просмотров в Истории просмотров и ограничения на размер истории.
         if(nodeMap.containsKey(task.ID)){ //если уже сожержит - удаляем старую, записываем новую
+            removeNode(nodeMap.get(task.ID));
             nodeMap.remove(task.ID);
             linkLast(task);
         } else {
@@ -17,30 +18,17 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
     @Override
     public void remove(int id){ // при удалении задачи так же удалять её из истории просмотров
-
+    nodeMap.remove(id);
     }
     @Override
-    public List<Task> getHistory(){
+    public List<Object> getHistory(){
         return getTasks();
     }
 
 
 
-    class Node<E> {
-        public E data;
-        public Node<E> next;
-        public Node<E> prev;
-
-        public Node(Node<E> prev, E data, Node<E> next) {
-            this.data = data;
-            this.next = next;
-            this.prev = prev;
-        }
-    }
-
     private Node<Task> head;
     private Node<Task> tail;
-    private int size = 0;
 
     public void linkLast(Task task) {
         final Node<Task> oldTail = tail;
@@ -52,51 +40,28 @@ public class InMemoryHistoryManager implements HistoryManager {
             oldTail.next = newNode;
             head = newNode;
         }
-        size++;
         nodeMap.put(task.ID, newNode);
     }
 
-    public List<Task> getTasks(){
-        history.
+    public List<Object> getTasks(){
+        return new ArrayList<>(nodeMap.values());
     }
 
     public void removeNode(Node node){
-
-    }
-
-}
-
-  /*  public T getFirst() {
-        final Node<T> curHead = head;
-        if (curHead == null)
-            throw new NoSuchElementException();
-        return head.data;
-    }
-
-    public T getLast() {
-        final Node<T> curTail = tail;
-        if (curTail == null)
-            throw new NoSuchElementException();
-        return tail.data;
-    }
-
-    public int size() {
-        return this.size;
-    }
-    public void addFirst(T element) {
-        final Node<T> oldHead = head;
-        final Node<T> newNode = new Node<>(null, element, oldHead);
-        head = newNode;
-        if (oldHead == null)
-            tail = newNode;
-        else
-            oldHead.prev = newNode;
-        size++;
-    }*/
-
-
-       /* if(history.size() >= 10){
-            history.removeFirst();
+        if (head == null || node == null) {
+            return;
         }
-        history.addLast(task);
-        System.out.println(history);*/
+
+        if (head == node) {
+            head = node.next;
+        }
+
+        if (node.next != null) {
+            node.next.prev = node.prev;
+        }
+
+        if (node.prev != null) {
+            node.prev.next = node.next;
+        }
+    }
+}

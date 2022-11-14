@@ -49,8 +49,6 @@ public class InMemoryTaskManager implements TaskManager {
         if (tasks.containsKey(ID)) {
             System.out.println(tasks.get(ID));
             historyManager.add(tasks.get(ID));
-            historyManager.getHistory();
-
         } else {
             System.out.println("Такой ID не существует!");
         }
@@ -59,6 +57,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteTaskByID(int ID) {
         if (tasks.containsKey(ID)) {
             tasks.remove(ID);
+            historyManager.remove(ID);
         } else {
             System.out.println("Такой ID не существует!");
         }
@@ -78,7 +77,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (subTasks.containsKey(ID)) {
             subTasks.put(ID, subTask);
             updateEpicStatus(subTask.getEpicID());
-
+            historyManager.add(tasks.get(ID));
         } else {
             System.out.println("Такой ID не существует");
         }
@@ -116,7 +115,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void printSubTaskByID(int ID) {
         if (subTasks.containsKey(ID)) {
             System.out.println(subTasks.get(ID));
-//            add(tasks.get(ID));
+            historyManager.add(tasks.get(ID));
         } else {
             System.out.println("Такой ID не существует!");
         }
@@ -125,6 +124,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteSubTaskByID(int ID) {
         if (subTasks.containsKey(ID)) {
             subTasks.remove(ID);
+            historyManager.remove(ID);
         } else {
             System.out.println("Такой ID не существует!");
         }
@@ -158,7 +158,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void printEpicByID(int ID) {
         if (epics.containsKey(ID)) {
             System.out.println(epics.get(ID));
-//            add(tasks.get(ID));
+            historyManager.add(tasks.get(ID));
         } else {
             System.out.println("Такой ID не существует!");
         }
@@ -167,6 +167,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteEpicByID(int ID) {
         if (epics.containsKey(ID)) {
             epics.remove(ID);
+            historyManager.remove(ID);
         } else {
             System.out.println("Такой ID не существует!");
         }

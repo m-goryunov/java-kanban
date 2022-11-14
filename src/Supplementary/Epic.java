@@ -2,7 +2,7 @@ package Supplementary;
 
 public class Epic extends Task {
 
-    private Integer epicID;
+    private final Integer epicID;
     private TaskStatus epicStatus;
 
     public Epic(String name, String description, TaskStatus status, Integer ID) {
