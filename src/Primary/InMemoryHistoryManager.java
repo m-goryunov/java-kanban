@@ -5,15 +5,16 @@ import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private final Map <Integer, Node> nodeMap = new HashMap<>();
+    CustomLinkedList customLinkedList = new CustomLinkedList();
 
     @Override
     public void add(Task task) { // Избавиться от повторных просмотров в Истории просмотров и ограничения на размер истории.
         if(nodeMap.containsKey(task.ID)){ //если уже сожержит - удаляем старую, записываем новую
-            removeNode(nodeMap.get(task.ID));
+            customLinkedList.removeNode(nodeMap.get(task.ID));
             nodeMap.remove(task.ID);
-            linkLast(task);
+            customLinkedList.linkLast(task);
         } else {
-            linkLast(task); // если нет - просто записываем новую
+            customLinkedList.linkLast(task); // если нет - просто записываем новую
         }
     }
     @Override
@@ -22,32 +23,31 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
     @Override
     public List<Object> getHistory(){
-        return getTasks();
+        return customLinkedList.getTasks();
     }
 
 
-
-    private Node<Task> head;
+public class CustomLinkedList {
+    private  Node<Task> head;
     private Node<Task> tail;
 
-    public void linkLast(Task task) {
-        final Node<Task> oldTail = tail;
-        final Node<Task> newNode = new Node<>(tail, task, null);
-        tail = newNode;
-        if (oldTail == null) {
-            oldTail.next = newNode;
-        } else {
-            oldTail.next = newNode;
-            head = newNode;
+    void linkLast(Task task) {
+            final Node<Task> l = tail;
+            final Node<Task> newNode = new Node<>(l, task, null);
+            tail = newNode;
+            if (l == null) {
+                head = newNode;
+            } else {
+                l.next = newNode;
+            }
+            nodeMap.put(task.ID, newNode);
         }
-        nodeMap.put(task.ID, newNode);
-    }
 
-    public List<Object> getTasks(){
+    public List<Object> getTasks() {
         return new ArrayList<>(nodeMap.values());
     }
 
-    public void removeNode(Node node){
+    public void removeNode(Node node) {
         if (head == null || node == null) {
             return;
         }
@@ -64,4 +64,5 @@ public class InMemoryHistoryManager implements HistoryManager {
             node.prev.next = node.next;
         }
     }
+}
 }
