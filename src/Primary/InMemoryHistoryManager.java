@@ -4,12 +4,12 @@ import Supplementary.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final Map <Integer, Node> nodeMap = new HashMap<>();
+    private Map <Integer, Node> nodeMap = new HashMap<>();
     CustomLinkedList customLinkedList = new CustomLinkedList();
 
     @Override
     public void add(Task task) { // Избавиться от повторных просмотров в Истории просмотров и ограничения на размер истории.
-        if(nodeMap.containsKey(task.ID)){ //если уже сожержит - удаляем старую, записываем новую
+        if(nodeMap.containsKey(task.ID)){ //если уже содержит - удаляем старую, записываем новую
             customLinkedList.removeNode(nodeMap.get(task.ID));
             nodeMap.remove(task.ID);
             customLinkedList.linkLast(task);
@@ -21,13 +21,14 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void remove(int id){ // при удалении задачи так же удалять её из истории просмотров
     nodeMap.remove(id);
     }
+
     @Override
-    public List<Object> getHistory(){
+    public List<Object> getHistory() {
         return customLinkedList.getTasks();
     }
 
 
-public class CustomLinkedList {
+private class CustomLinkedList {
     private  Node<Task> head;
     private Node<Task> tail;
 

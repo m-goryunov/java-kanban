@@ -19,7 +19,7 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return "Supplementary.SubTask{" +
+        return "SubTask{" +
                 "epicID=" + epicID +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +

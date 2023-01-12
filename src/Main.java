@@ -63,7 +63,7 @@ public class Main {
                     }
                     break;
                 case 4:
-                    System.out.println("Введите тип задачи: \n 1. Supplementary.Task \n 2. Supplementary.SubTask \n 3. Supplementary.Epic");
+                    System.out.println("Введите тип задачи: \n \n 1. Task \n 2. SubTask \n 3. Epic");
                     switch (scanner.nextInt()) {
                         case 1:
                             taskManager.createTask(task1);
@@ -81,7 +81,7 @@ public class Main {
                 case 5:
                     System.out.println("Введите ID задачи");
                     int updateID = scanner.nextInt();
-                    System.out.println("Какую задачу обновить? \n 1. Supplementary.Task \n 2. Supplementary.SubTask \n 3. Supplementary.Epic");
+                    System.out.println("Какую задачу обновить? \n 1. Task \n 2. SubTask \n 3. Epic");
                     switch (scanner.nextInt()) {
                         case 1:
                             taskManager.updateTask(updateID, new Task("Новое название"
@@ -108,7 +108,7 @@ public class Main {
 
                     System.out.println("Введите ID задачи");
                     int deleteID = scanner.nextInt();
-                    System.out.println("Какую задачу удалить? \n 1. Supplementary.Task \n 2. Supplementary.SubTask \n 3. Supplementary.Epic");
+                    System.out.println("Какую задачу удалить? \n \n 1. Task \n 2. SubTask \n 3. Epic");
                     switch (scanner.nextInt()) {
                         case 1:
                             taskManager.deleteTaskByID(deleteID);

@@ -16,7 +16,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Supplementary.Task{" +
+        return "Task{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
