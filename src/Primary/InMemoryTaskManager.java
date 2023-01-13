@@ -56,8 +56,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTaskByID(int ID) {
         if (tasks.containsKey(ID)) {
-            tasks.remove(ID);
             historyManager.remove(ID);
+            tasks.remove(ID);
         } else {
             System.out.println("Такой ID не существует!");
         }

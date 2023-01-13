@@ -35,14 +35,9 @@ public class Main {
                 case 2:
                     System.out.println("Что удаляем? \n 1. Таски \n 2. Эпики \n 3. Сабтаски");
                     switch (scanner.nextInt()) {
-                        case 1:
-                            taskManager.deleteAllTasks();
-                            break;
-                        case 2:
-                            taskManager.deleteAllEpics();
-                            break;
-                        case 3:
-                            taskManager.deleteAllSubTasks();
+                        case 1 -> taskManager.deleteAllTasks();
+                        case 2 -> taskManager.deleteAllEpics();
+                        case 3 -> taskManager.deleteAllSubTasks();
                     }
                     break;
                 case 3:
@@ -51,31 +46,21 @@ public class Main {
                     int printID = scanner.nextInt();
                     System.out.println("Какую задачу показать? \n 1. Таски \n 2. Эпики \n 3. Сабтаски");
                     switch (scanner.nextInt()) {
-                        case 1:
-                            taskManager.printTaskByID(printID);
-                            break;
-                        case 2:
-                            taskManager.printEpicByID(printID);
-                            break;
-                        case 3:
-                            taskManager.printSubTaskByID(printID);
-                            break;
+                        case 1 -> taskManager.printTaskByID(printID);
+                        case 2 -> taskManager.printEpicByID(printID);
+                        case 3 -> taskManager.printSubTaskByID(printID);
                     }
                     break;
                 case 4:
                     System.out.println("Введите тип задачи: \n \n 1. Task \n 2. SubTask \n 3. Epic");
                     switch (scanner.nextInt()) {
-                        case 1:
-                            taskManager.createTask(task1);
-                            break;
-                        case 2:
+                        case 1 -> taskManager.createTask(task1);
+                        case 2 -> {
                             System.out.println("К какому Эпику относится подзадача?");
                             Integer setEpic = scanner.nextInt();
                             taskManager.createSubTask(subTask1, setEpic);
-                            break;
-                        case 3:
-                            taskManager.createEpic(epic1);
-                            break;
+                        }
+                        case 3 -> taskManager.createEpic(epic1);
                     }
                     break;
                 case 5:
@@ -83,25 +68,21 @@ public class Main {
                     int updateID = scanner.nextInt();
                     System.out.println("Какую задачу обновить? \n 1. Task \n 2. SubTask \n 3. Epic");
                     switch (scanner.nextInt()) {
-                        case 1:
-                            taskManager.updateTask(updateID, new Task("Новое название"
-                                    , "Новое описание"
-                                    , TaskStatus.IN_PROGRESS, updateID));
-                            break;
-                        case 2:
+                        case 1 -> taskManager.updateTask(updateID, new Task("Новое название"
+                                , "Новое описание"
+                                , TaskStatus.IN_PROGRESS, updateID));
+                        case 2 -> {
                             System.out.println("К какому эпику присвоить?");
                             Integer newEpicID = scanner.nextInt();
                             taskManager.updateSubTask(updateID, new SubTask("Новое название"
                                     , "Новое описание"
                                     , TaskStatus.IN_PROGRESS
                                     , updateID, newEpicID));
-                            break;
-                        case 3:
-                            taskManager.updateEpic(updateID, new Epic("Новое название"
-                                    , "Новое описание"
-                                    , TaskStatus.IN_PROGRESS
-                                    , updateID));
-                            break;
+                        }
+                        case 3 -> taskManager.updateEpic(updateID, new Epic("Новое название"
+                                , "Новое описание"
+                                , TaskStatus.IN_PROGRESS
+                                , updateID));
                     }
                     break;
                 case 6:
@@ -110,15 +91,9 @@ public class Main {
                     int deleteID = scanner.nextInt();
                     System.out.println("Какую задачу удалить? \n \n 1. Task \n 2. SubTask \n 3. Epic");
                     switch (scanner.nextInt()) {
-                        case 1:
-                            taskManager.deleteTaskByID(deleteID);
-                            break;
-                        case 2:
-                            taskManager.deleteSubTaskByID(deleteID);
-                            break;
-                        case 3:
-                            taskManager.deleteEpicByID(deleteID);
-                            break;
+                        case 1 -> taskManager.deleteTaskByID(deleteID);
+                        case 2 -> taskManager.deleteSubTaskByID(deleteID);
+                        case 3 -> taskManager.deleteEpicByID(deleteID);
                     }
                     break;
                 case 7:
@@ -140,9 +115,15 @@ public class Main {
     }
 
     private static void printMenu() {
-        System.out.println(" 1. Получить список всех задач\n 2. Удалить все задачи "
-                + "\n 3. Получить задачу по идентификатору \n 4. Создать задачу \n 5. Обновить задачу "
-                + "\n 6. Удалить задачу по идентификатору \n 7. Получить Подзадачи по Эпику" +
-                "\n 8. Посмотреть историю просмотров");
+        System.out.println("""
+                 1. Получить список всех задач
+                 2. Удалить все задачи\s
+                 3. Получить задачу по идентификатору\s
+                 4. Создать задачу\s
+                 5. Обновить задачу\s
+                 6. Удалить задачу по идентификатору\s
+                 7. Получить Подзадачи по Эпику
+                 8. Посмотреть историю просмотров\
+                """);
     }
 }
