@@ -103,7 +103,7 @@ public class Main {
                     break;
 
                 case 8:
-                    historyManager.getHistory();
+                    System.out.println(historyManager.getHistory().toString());
                     break;
                 case 0:
                     break;

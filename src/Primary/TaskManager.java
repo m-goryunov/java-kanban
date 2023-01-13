@@ -4,8 +4,6 @@ import Supplementary.Epic;
 import Supplementary.SubTask;
 import Supplementary.Task;
 
-import java.util.Deque;
-
 public interface TaskManager {
     void createTask(Task task);
     void updateTask(int ID, Task task);

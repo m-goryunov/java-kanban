@@ -12,7 +12,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, SubTask> subTasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private Integer ID = 0;
-    HistoryManager historyManager = new InMemoryHistoryManager();
+    final HistoryManager historyManager = new InMemoryHistoryManager();
 
 
     private Integer getID() {
@@ -22,7 +22,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createTask(Task task) {
-        tasks.put(getID(), task);
+        int setID = getID();
+        task.ID = setID;
+        tasks.put(setID, task);
     }
     @Override
     public void updateTask(int ID, Task task) {
@@ -66,7 +68,9 @@ public class InMemoryTaskManager implements TaskManager {
     public void createSubTask(SubTask subTask, Integer epicID) {
         if (epics.containsKey(epicID)) {
             subTask.setEpicID(epicID);
-            subTasks.put(getID(), subTask);
+            int setID = getID();
+            subTask.ID = setID;
+            subTasks.put(setID, subTask);
         } else {
             System.out.println("Для сабтаски не создан Эпик!");
 
@@ -131,7 +135,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
     @Override
     public void createEpic(Epic epic) {
-        epics.put(getID(), epic);
+        int setID = getID();
+        epic.ID = setID;
+        epics.put(setID, epic);
     }
     @Override
     public void updateEpic(int ID, Epic epic) {

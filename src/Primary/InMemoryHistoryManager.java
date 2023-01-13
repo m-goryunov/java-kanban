@@ -46,8 +46,8 @@ private class CustomLinkedList<E> {
         return newNode;
     }
 
-        void unlink(Node<E> x) { // он же removeNode
-            //final E element = x.item;
+        E unlink(Node<E> x) { // он же removeNode
+            final E element = x.item;
             final Node<E> next = x.next;
             final Node<E> prev = x.prev;
 
@@ -66,7 +66,7 @@ private class CustomLinkedList<E> {
             }
 
             x.item = null;
-            //return element;
+            return element;
         }
 
     public List<Task> getTasks() { // Собирает все задачи из CustomLinkedList в обычный ArrayList
