@@ -1,13 +1,10 @@
 package Primary;
 
-import Primary.HistoryManager;
-import Primary.InMemoryHistoryManager;
-import Primary.InMemoryTaskManager;
-import Primary.TaskManager;
 import Supplementary.Epic;
 import Supplementary.SubTask;
 import Supplementary.Task;
 import Supplementary.TaskStatus;
+
 
 import java.util.Scanner;
 
@@ -29,21 +26,20 @@ public class Main {
         printMenu();
         while (true) {
             switch (scanner.nextInt()) {
-                case 1:
+                case 1 -> {
                     taskManager.printAllTasks();
                     taskManager.printAllEpics();
                     taskManager.printAllSubTasks();
-                    break;
-                case 2:
+                }
+                case 2 -> {
                     System.out.println("Что удаляем? \n 1. Таски \n 2. Эпики \n 3. Сабтаски");
                     switch (scanner.nextInt()) {
                         case 1 -> taskManager.deleteAllTasks();
                         case 2 -> taskManager.deleteAllEpics();
                         case 3 -> taskManager.deleteAllSubTasks();
                     }
-                    break;
-                case 3:
-
+                }
+                case 3 -> {
                     System.out.println("Введите ID");
                     int printID = scanner.nextInt();
                     System.out.println("Какую задачу показать? \n 1. Таски \n 2. Эпики \n 3. Сабтаски");
@@ -52,8 +48,8 @@ public class Main {
                         case 2 -> taskManager.printEpicByID(printID);
                         case 3 -> taskManager.printSubTaskByID(printID);
                     }
-                    break;
-                case 4:
+                }
+                case 4 -> {
                     System.out.println("Введите тип задачи: \n \n 1. Task \n 2. SubTask \n 3. Epic");
                     switch (scanner.nextInt()) {
                         case 1 -> taskManager.createTask(task1);
@@ -64,8 +60,8 @@ public class Main {
                         }
                         case 3 -> taskManager.createEpic(epic1);
                     }
-                    break;
-                case 5:
+                }
+                case 5 -> {
                     System.out.println("Введите ID задачи");
                     int updateID = scanner.nextInt();
                     System.out.println("Какую задачу обновить? \n 1. Task \n 2. SubTask \n 3. Epic");
@@ -86,9 +82,8 @@ public class Main {
                                 , TaskStatus.IN_PROGRESS
                                 , updateID));
                     }
-                    break;
-                case 6:
-
+                }
+                case 6 -> {
                     System.out.println("Введите ID задачи");
                     int deleteID = scanner.nextInt();
                     System.out.println("Какую задачу удалить? \n \n 1. Task \n 2. SubTask \n 3. Epic");
@@ -97,20 +92,15 @@ public class Main {
                         case 2 -> taskManager.deleteSubTaskByID(deleteID);
                         case 3 -> taskManager.deleteEpicByID(deleteID);
                     }
-                    break;
-                case 7:
+                }
+                case 7 -> {
                     System.out.println("По какому эпику получить подзадачи?");
                     int epicSubtasksIds = scanner.nextInt();
                     taskManager.getAllSubtasksByEpic(epicSubtasksIds);
-                    break;
-
-                case 8:
-                    System.out.println(historyManager.getHistory().toString());
-                    break;
-                case 0:
-                    System.exit(0);
-                default:
-                    System.out.println("Такой команды нет");
+                }
+                case 8 -> System.out.println(historyManager.getHistory().toString());
+                case 0 -> System.exit(0);
+                default -> System.out.println("Такой команды нет");
             }
             printMenu();
         }
