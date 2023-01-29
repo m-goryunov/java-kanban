@@ -1,3 +1,5 @@
+package Primary;
+
 import Primary.HistoryManager;
 import Primary.InMemoryHistoryManager;
 import Primary.InMemoryTaskManager;
@@ -18,7 +20,7 @@ public class Main {
         SubTask subTask2 = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, null);
         SubTask subTask3 = new SubTask("Сабтаска3", "Техдолг Q3", TaskStatus.NEW, null, null);
         Epic epic1 = new Epic("Самый важный ППР", "Доля прокрастинации сотрудников < 90 б.п.",
-                                                                                                TaskStatus.NEW, null);
+                TaskStatus.NEW, null);
 
         Scanner scanner = new Scanner(System.in);
         TaskManager taskManager = new InMemoryTaskManager();
@@ -106,7 +108,7 @@ public class Main {
                     System.out.println(historyManager.getHistory().toString());
                     break;
                 case 0:
-                    break;
+                    System.exit(0);
                 default:
                     System.out.println("Такой команды нет");
             }
@@ -117,13 +119,14 @@ public class Main {
     private static void printMenu() {
         System.out.println("""
                  1. Получить список всех задач
-                 2. Удалить все задачи\s
-                 3. Получить задачу по идентификатору\s
-                 4. Создать задачу\s
-                 5. Обновить задачу\s
-                 6. Удалить задачу по идентификатору\s
+                 2. Удалить все задачи
+                 3. Получить задачу по идентификатору
+                 4. Создать задачу
+                 5. Обновить задачу
+                 6. Удалить задачу по идентификатору
                  7. Получить Подзадачи по Эпику
-                 8. Посмотреть историю просмотров\
+                 8. Посмотреть историю просмотров
+                 0. Выход из программы
                 """);
     }
 }
