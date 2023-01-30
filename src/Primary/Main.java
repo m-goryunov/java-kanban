@@ -12,12 +12,11 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Task task1 = new Task("Тасочка", "Доработать АС", TaskStatus.NEW, null);
+        //Task task1 = new Task("Тасочка1", "Доработать АС", TaskStatus.NEW, null);
         SubTask subTask1 = new SubTask("Сабтаска1", "Техдолг Q1", TaskStatus.NEW, null, null);
         SubTask subTask2 = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, null);
         SubTask subTask3 = new SubTask("Сабтаска3", "Техдолг Q3", TaskStatus.NEW, null, null);
-        Epic epic1 = new Epic("Самый важный ППР", "Доля прокрастинации сотрудников < 90 б.п.",
-                TaskStatus.NEW, null);
+        Epic epic1 = new Epic("Эпик1", "Темная тема в Пачке", TaskStatus.NEW, null);
 
         Scanner scanner = new Scanner(System.in);
         TaskManager taskManager = new InMemoryTaskManager();
@@ -52,7 +51,7 @@ public class Main {
                 case 4 -> {
                     System.out.println("Введите тип задачи: \n \n 1. Task \n 2. SubTask \n 3. Epic");
                     switch (scanner.nextInt()) {
-                        case 1 -> taskManager.createTask(task1);
+                        case 1 -> taskManager.createTask(new Task("Тасочка1", "Доработать АС", TaskStatus.NEW, null));
                         case 2 -> {
                             System.out.println("К какому Эпику относится подзадача?");
                             Integer setEpic = scanner.nextInt();
