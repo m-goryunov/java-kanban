@@ -17,6 +17,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         nodeMap.put(task.ID, customLinkedList.linkLast(task));
     }
 
+
     @Override
     public void remove(int id) {
         customLinkedList.unlink(nodeMap.get(id));
