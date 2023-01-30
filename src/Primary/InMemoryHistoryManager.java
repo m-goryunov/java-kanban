@@ -13,10 +13,9 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void add(Task task) {
         if (nodeMap.containsKey(task.ID)) {
             remove(task.ID);
-            customLinkedList.getTasks();
         }
         nodeMap.put(task.ID, customLinkedList.linkLast(task));
-        customLinkedList.getTasks();
+        //customLinkedList.getTasks();
 
     }
 
@@ -24,7 +23,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void remove(int id) {
         customLinkedList.unlink(nodeMap.get(id));
         nodeMap.remove(id);
-        customLinkedList.getTasks();
+        //customLinkedList.getTasks();
     }
 
 
@@ -38,14 +37,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         transient Node<E> first; //head
         transient Node<E> last; //tail
-
-        public List<Task> getTasks() { // Собирает все задачи из CustomLinkedList в обычный ArrayList
-            List<Task> history = new ArrayList<>();
-            for (Node<Task> node : nodeMap.values()) {
-                history.add(node.item);
-            }
-            return history;
-        }
+        int size = 0;
 
         Node<E> linkLast(E e) {
             final Node<E> l = last;
@@ -56,6 +48,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             } else {
                 l.next = newNode;
             }
+            size++;
             return newNode;
         }
 
@@ -79,8 +72,49 @@ public class InMemoryHistoryManager implements HistoryManager {
             }
 
             x.item = null;
+            size--;
             return element;
         }
 
+        public E get(int index) {
+            checkElementIndex(index);
+            return node(index).item;
+        }
+
+        Node<E> node(int index) {
+
+            if (index < (size >> 1)) {
+                Node<E> x = first;
+                for (int i = 0; i < index; i++)
+                    x = x.next;
+                return x;
+            } else {
+                Node<E> x = last;
+                for (int i = size - 1; i > index; i--)
+                    x = x.prev;
+                return x;
+            }
+        }
+
+        private void checkElementIndex(int index) {
+            if (!isElementIndex(index)) System.out.println("Такого индекса нет / нет истории просмотров");
+        }
+
+        private boolean isElementIndex(int index) {
+            return index >= 0 && index < size;
+        }
+
+
+        private List<E> getTasks() { // Собирает все задачи из CustomLinkedList в обычный ArrayList
+            List<E> history = new ArrayList<>();
+            for (int i = 0; i < customLinkedList.size; i++) {
+                history.add(get(i));
+            }
+
+            /*for (Node<Task> node : nodeMap.values()) {
+                history.add(node.item);
+            }*/
+            return history;
+        }
     }
 }
