@@ -190,6 +190,11 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteEpicByID(int ID) {
         if (epics.containsKey(ID)) {
             epics.remove(ID);
+            for (SubTask subTask : subTasks.values()) {
+                if (subTask.getEpicID() == ID) {
+                    deleteSubTaskByID(subTask.ID);
+                }
+            }
             historyManager.remove(ID);
         } else {
             System.out.println("Такой ID не существует!");
