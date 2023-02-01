@@ -1,23 +1,23 @@
 package Primary;
 
-import Supplementary.Epic;
-import Supplementary.SubTask;
-import Supplementary.Task;
+import Supplementary.*;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
-    private static final String HOME_DIR = System.getProperty("user.home");
+    static Path path;
 
-
-    public static void main(String[] args){
-        FileBackedTasksManager fbtm = new FileBackedTasksManager();
-
-        fbtm.save();
+    public FileBackedTasksManager() {
+        path = Paths.get(System.getProperty("user.home"), "/IdeaProjects/java-kanban/resources", "check.csv");
     }
 
 
@@ -26,37 +26,53 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         //2. Список задач с новой строки
         //3. Пустая строка
         //4. Идентификаторы задач из истории просмотров (флаг что были просмотрены и выполнены)
-
-
-        Path path = Paths.get(HOME_DIR,"/IdeaProjects/java-kanban/resources","test.csv");
         try {
             Files.createFile(path);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+
+
     }
 
 
     String toString(Task task) {
-
-        return task.ID + ", " + task.name + ", " + task.status + ", " + task.description;
+        System.out.println("Перевод в String...");
+        return task.ID + ", " + task.type + task.name + ", " + task.status + ", " + task.description;
     }
 
-    Task fromString(String value){
+    Task fromString(String value) {
+        System.out.println("Перевод в Task...");
+        List<Task> task = new ArrayList<>();
+        String[] values = value.split(System.lineSeparator());
+        for (int i = 0; i < values.length; i++) {
+            String[] lineContent = values[i].split(",");
+            Task task1 = new Task(
+                    lineContent[0],
+                    lineContent[1],
+                    Enum.valueOf(TaskStatus.class, lineContent[2]),
+                    Integer.parseInt(lineContent[3]),
+                    lineContent[4]
+            );
+            task.add(task1);
+        }
+        return task.get(1); // делает одну
+    }
+
+
+    static void FileBackedTasksManager() { //восстанавливать данные менеджера из файла при запуске программы
 
     }
 
-    public FileBackedTasksManager() { // конструктор
-    }
-
-
-    static void FileBackedTasksManager() { //
-
-    }
-
-    static void loadFromFile(File file){
-
+    static String loadFromFile(File file) { //восстанавливать данные менеджера из файла при запуске программы
+        try {
+            System.out.println("ПУТЬ!" + file.getPath());
+            return Files.readString(Path.of(file.getPath()));
+        } catch (IOException e) {
+            System.out.println("Файл не считан!");
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -75,5 +91,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     public void createEpic(Epic epic) {
         super.createEpic(epic);
         save();
+    }
+
+    public static void main(String[] args) {
+        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
+
+
+        System.out.println(fileBackedTasksManager.fromString(FileBackedTasksManager.loadFromFile(path.toFile())));
+
     }
 }

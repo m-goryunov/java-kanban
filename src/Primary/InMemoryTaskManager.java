@@ -98,11 +98,11 @@ public class InMemoryTaskManager implements TaskManager {
         for (SubTask subTask : subTasks.values()) {
             for (Epic epic : epics.values()) {
                 if (subTask.status == TaskStatus.NEW) {
-                    epics.put(epicID, new Epic(epic.name, epic.description, TaskStatus.NEW, epicID));
-                } else if (subTask.status == TaskStatus.NEW) {
-                    epics.put(epicID, new Epic(epic.name, epic.description, TaskStatus.DONE, epicID));
-                } else {
-                    epics.put(epicID, new Epic(epic.name, epic.description, TaskStatus.IN_PROGRESS, epicID));
+                    epics.put(epicID, new Epic(epic.name, epic.description, TaskStatus.NEW, epicID, epic.type));
+                } else if (subTask.status == TaskStatus.DONE) {
+                    epics.put(epicID, new Epic(epic.name, epic.description, TaskStatus.DONE, epicID, epic.type));
+                } else if (subTask.status == TaskStatus.IN_PROGRESS) {
+                    epics.put(epicID, new Epic(epic.name, epic.description, TaskStatus.IN_PROGRESS, epicID, epic.type));
                 }
             }
         }

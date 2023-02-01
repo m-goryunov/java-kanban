@@ -5,23 +5,24 @@ public class Task {
     public String description;
     public TaskStatus status;
     public Integer ID;
-    public String type = "Task";
+    public String type;
 
-    public Task(String name, String description, TaskStatus status, Integer ID) {
+    public Task(String name, String description, TaskStatus status, Integer ID, String type) {
         this.name = name;
         this.description = description;
         this.status = status;
         this.ID = ID;
+        this.type = type;
     }
-
 
     @Override
     public String toString() {
         return "Task{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", status='" + status + '\'' +
+                ", status=" + status +
                 ", ID=" + ID +
+                ", type='" + type + '\'' +
                 '}';
     }
 }

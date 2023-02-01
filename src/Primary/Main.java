@@ -45,13 +45,16 @@ public class Main {
                 case 4 -> {
                     System.out.println("Введите тип задачи: \n \n 1. Task \n 2. SubTask \n 3. Epic");
                     switch (scanner.nextInt()) {
-                        case 1 -> taskManager.createTask(new Task("Тасочка1", "Доработать АС", TaskStatus.NEW, null));
+                        case 1 -> taskManager.createTask(new Task("Тасочка1", "Доработать АС",
+                                TaskStatus.NEW, null, "Task"));
                         case 2 -> {
                             System.out.println("К какому Эпику относится подзадача?");
                             Integer setEpic = scanner.nextInt();
-                            taskManager.createSubTask(new SubTask("Сабтаска1", "Техдолг Q1", TaskStatus.NEW, null, null), setEpic);
+                            taskManager.createSubTask(new SubTask("Сабтаска1", "Техдолг Q1",
+                                    TaskStatus.NEW, null, null, "SubTask"), setEpic);
                         }
-                        case 3 -> taskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", TaskStatus.NEW, null));
+                        case 3 -> taskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке",
+                                TaskStatus.NEW, null, "Epic"));
                     }
                 }
                 case 5 -> {
@@ -61,19 +64,19 @@ public class Main {
                     switch (scanner.nextInt()) {
                         case 1 -> taskManager.updateTask(ID, new Task("Новое название"
                                 , "Новое описание"
-                                , TaskStatus.IN_PROGRESS, ID));
+                                , TaskStatus.IN_PROGRESS, ID, "Task"));
                         case 2 -> {
                             System.out.println("К какому эпику присвоить?");
                             Integer newEpicID = scanner.nextInt();
                             taskManager.updateSubTask(ID, new SubTask("Новое название"
                                     , "Новое описание"
                                     , TaskStatus.IN_PROGRESS
-                                    , ID, newEpicID));
+                                    , ID, newEpicID, "SubTask"));
                         }
                         case 3 -> taskManager.updateEpic(ID, new Epic("Новое название"
                                 , "Новое описание"
                                 , TaskStatus.IN_PROGRESS
-                                , ID));
+                                , ID, "Epic"));
                     }
                 }
                 case 6 -> {
