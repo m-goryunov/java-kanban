@@ -7,6 +7,7 @@ public class SubTask extends Task {
     public SubTask(String name, String description, TaskStatus status, Integer ID, Integer epicID) {
         super(name, description, status, ID);
         this.epicID = epicID;
+        this.type = "SubTask";
     }
 
     public Integer getEpicID() {

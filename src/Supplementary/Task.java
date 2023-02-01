@@ -5,6 +5,7 @@ public class Task {
     public String description;
     public TaskStatus status;
     public Integer ID;
+    public String type = "Task";
 
     public Task(String name, String description, TaskStatus status, Integer ID) {
         this.name = name;

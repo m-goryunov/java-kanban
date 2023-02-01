@@ -20,8 +20,10 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        customLinkedList.unlink(nodeMap.get(id));
-        nodeMap.remove(id);
+        if (nodeMap.containsKey(id)) {
+            customLinkedList.unlink(nodeMap.get(id));
+            nodeMap.remove(id);
+        }
     }
 
 

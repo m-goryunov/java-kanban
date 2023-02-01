@@ -12,12 +12,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-        //Task task1 = new Task("Тасочка1", "Доработать АС", TaskStatus.NEW, null);
-        SubTask subTask1 = new SubTask("Сабтаска1", "Техдолг Q1", TaskStatus.NEW, null, null);
-        SubTask subTask2 = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, null);
-        SubTask subTask3 = new SubTask("Сабтаска3", "Техдолг Q3", TaskStatus.NEW, null, null);
-        Epic epic1 = new Epic("Эпик1", "Темная тема в Пачке", TaskStatus.NEW, null);
-
         Scanner scanner = new Scanner(System.in);
         TaskManager taskManager = new InMemoryTaskManager();
         HistoryManager historyManager = new InMemoryHistoryManager();
@@ -55,31 +49,31 @@ public class Main {
                         case 2 -> {
                             System.out.println("К какому Эпику относится подзадача?");
                             Integer setEpic = scanner.nextInt();
-                            taskManager.createSubTask(subTask1, setEpic);
+                            taskManager.createSubTask(new SubTask("Сабтаска1", "Техдолг Q1", TaskStatus.NEW, null, null), setEpic);
                         }
-                        case 3 -> taskManager.createEpic(epic1);
+                        case 3 -> taskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", TaskStatus.NEW, null));
                     }
                 }
                 case 5 -> {
                     System.out.println("Введите ID задачи");
-                    int updateID = scanner.nextInt();
+                    int ID = scanner.nextInt();
                     System.out.println("Какую задачу обновить? \n 1. Task \n 2. SubTask \n 3. Epic");
                     switch (scanner.nextInt()) {
-                        case 1 -> taskManager.updateTask(updateID, new Task("Новое название"
+                        case 1 -> taskManager.updateTask(ID, new Task("Новое название"
                                 , "Новое описание"
-                                , TaskStatus.IN_PROGRESS, updateID));
+                                , TaskStatus.IN_PROGRESS, ID));
                         case 2 -> {
                             System.out.println("К какому эпику присвоить?");
                             Integer newEpicID = scanner.nextInt();
-                            taskManager.updateSubTask(updateID, new SubTask("Новое название"
+                            taskManager.updateSubTask(ID, new SubTask("Новое название"
                                     , "Новое описание"
                                     , TaskStatus.IN_PROGRESS
-                                    , updateID, newEpicID));
+                                    , ID, newEpicID));
                         }
-                        case 3 -> taskManager.updateEpic(updateID, new Epic("Новое название"
+                        case 3 -> taskManager.updateEpic(ID, new Epic("Новое название"
                                 , "Новое описание"
                                 , TaskStatus.IN_PROGRESS
-                                , updateID));
+                                , ID));
                     }
                 }
                 case 6 -> {
@@ -119,3 +113,9 @@ public class Main {
                 """);
     }
 }
+
+        /*Task task1 = new Task("Тасочка1", "Доработать АС", TaskStatus.NEW, null);
+        SubTask subTask1 = new SubTask("Сабтаска1", "Техдолг Q1", TaskStatus.NEW, null, null);
+        SubTask subTask2 = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, null);
+        SubTask subTask3 = new SubTask("Сабтаска3", "Техдолг Q3", TaskStatus.NEW, null, null);
+        Epic epic1 = new Epic("Эпик1", "Темная тема в Пачке", TaskStatus.NEW, null);*/
