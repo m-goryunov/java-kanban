@@ -8,9 +8,9 @@ import Supplementary.TaskStatus;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final Map<Integer, Task> tasks = new HashMap<>();
-    private final Map<Integer, SubTask> subTasks = new HashMap<>();
-    private final Map<Integer, Epic> epics = new HashMap<>();
+    public static final Map<Integer, Task> tasks = new HashMap<>();
+    public static final Map<Integer, SubTask> subTasks = new HashMap<>();
+    public static final Map<Integer, Epic> epics = new HashMap<>();
     private Integer ID = 0;
     final HistoryManager historyManager = new InMemoryHistoryManager();
 
