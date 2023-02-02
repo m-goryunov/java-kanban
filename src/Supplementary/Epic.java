@@ -5,7 +5,7 @@ public class Epic extends Task {
     private final Integer epicID;
     private TaskStatus epicStatus;
 
-    public Epic(String name, String description, TaskStatus status, Integer ID, String type) {
+    public Epic(String name, String description, TaskStatus status, Integer ID, TaskType type) {
         super(name, description, status, ID, type);
         this.epicID = ID;
         this.epicStatus = status;

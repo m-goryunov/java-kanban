@@ -5,9 +5,9 @@ public class Task {
     public String description;
     public TaskStatus status;
     public Integer ID;
-    public String type;
+    public TaskType type;
 
-    public Task(String name, String description, TaskStatus status, Integer ID, String type) {
+    public Task(String name, String description, TaskStatus status, Integer ID, TaskType type) {
         this.name = name;
         this.description = description;
         this.status = status;
