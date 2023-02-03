@@ -1,8 +1,6 @@
 package Primary;
 
 import Supplementary.*;
-
-
 import java.util.Scanner;
 
 public class Main {

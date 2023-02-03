@@ -9,4 +9,4 @@ ID, type, name, status, description
 8, SUBTASK, Сабтаска1, NEW, Техдолг Q1
 9, SUBTASK, Сабтаска3, NEW, Техдолг Q3
 
-1, 2, 5
+History: 1, 2, 5, 9

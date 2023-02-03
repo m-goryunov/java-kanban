@@ -8,11 +8,12 @@ import Supplementary.TaskStatus;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
+    private Integer ID = 0;
     public static final Map<Integer, Task> tasks = new HashMap<>();
     public static final Map<Integer, SubTask> subTasks = new HashMap<>();
     public static final Map<Integer, Epic> epics = new HashMap<>();
-    private Integer ID = 0;
-    final static HistoryManager historyManager = new InMemoryHistoryManager();
+
+    static final HistoryManager historyManager = new InMemoryHistoryManager();
 
 
     private Integer getID() {
