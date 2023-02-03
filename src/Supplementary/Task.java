@@ -1,5 +1,7 @@
 package Supplementary;
 
+import java.util.Objects;
+
 public class Task {
     public String name;
     public String description;
@@ -24,6 +26,19 @@ public class Task {
                 ", ID=" + ID +
                 ", type='" + type + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return Objects.equals(name, task.name) && Objects.equals(description, task.description) && status == task.status && Objects.equals(ID, task.ID) && type == task.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
     }
 }
 

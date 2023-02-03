@@ -113,9 +113,3 @@ public class Main {
                 """);
     }
 }
-
-        /*Task task1 = new Task("Тасочка1", "Доработать АС", TaskStatus.NEW, null);
-        SubTask subTask1 = new SubTask("Сабтаска1", "Техдолг Q1", TaskStatus.NEW, null, null);
-        SubTask subTask2 = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, null);
-        SubTask subTask3 = new SubTask("Сабтаска3", "Техдолг Q3", TaskStatus.NEW, null, null);
-        Epic epic1 = new Epic("Эпик1", "Темная тема в Пачке", TaskStatus.NEW, null);*/

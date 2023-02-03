@@ -12,7 +12,7 @@ public class InMemoryTaskManager implements TaskManager {
     public static final Map<Integer, SubTask> subTasks = new HashMap<>();
     public static final Map<Integer, Epic> epics = new HashMap<>();
     private Integer ID = 0;
-    final HistoryManager historyManager = new InMemoryHistoryManager();
+    final static HistoryManager historyManager = new InMemoryHistoryManager();
 
 
     private Integer getID() {

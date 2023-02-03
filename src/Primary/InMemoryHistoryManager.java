@@ -39,7 +39,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         transient Node<E> last; //tail
         int size = 0;
 
-        private List<E> getTasks() {
+        List<E> getTasks() {
             List<E> history = new ArrayList<>();
             for (int i = 0; i < customLinkedList.size; i++) {
                 history.add(get(i));

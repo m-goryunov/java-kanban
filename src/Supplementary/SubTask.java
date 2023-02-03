@@ -1,5 +1,7 @@
 package Supplementary;
 
+import java.util.Objects;
+
 public class SubTask extends Task {
 
     private Integer epicID;
@@ -28,5 +30,19 @@ public class SubTask extends Task {
                 ", ID=" + ID +
                 ", type='" + type + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SubTask subTask = (SubTask) o;
+        return Objects.equals(epicID, subTask.epicID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), epicID);
     }
 }
