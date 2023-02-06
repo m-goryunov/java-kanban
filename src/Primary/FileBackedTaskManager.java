@@ -19,7 +19,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     public static void main(String[] args) {
         // Тест для проверки записи из файла>>>>
-/*        FileBackedTaskManager();
+        /*FileBackedTaskManager();
         System.out.println("Tasks...\n" + tasks);
         System.out.println("SubTasks...\n" +subTasks);
         System.out.println("Epics...\n" +epics);
@@ -27,15 +27,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
         //Тест для проверки записи в файл>>>>
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager();
-        fileBackedTaskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", TaskStatus.NEW, null, null, null));
-        fileBackedTaskManager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, null));
+        fileBackedTaskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", TaskStatus.NEW, null, null, new HashMap<>()));
+        fileBackedTaskManager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, 1));
         fileBackedTaskManager.printTaskById(1);
         fileBackedTaskManager.printEpicById(2);
-        fileBackedTaskManager.createTask(new Task("Таск2", "Доработать АС", TaskStatus.NEW, null, null));
-        fileBackedTaskManager.createTask(new Task("Таск3", "Доработать АС", TaskStatus.NEW, null, null));
-        fileBackedTaskManager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, null));
+        fileBackedTaskManager.createTask(new Task("Таск2", "Доработать АС", TaskStatus.NEW, null, 1));
+        fileBackedTaskManager.createTask(new Task("Таск3", "Доработать АС", TaskStatus.NEW, null, 1));
+        fileBackedTaskManager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 1));
         fileBackedTaskManager.printSubTaskById(5);
-        fileBackedTaskManager.createTask(new Task("Таск4", "Доработать АС", TaskStatus.NEW, null, null));
+        fileBackedTaskManager.createTask(new Task("Таск4", "Доработать АС", TaskStatus.NEW, null, 1));
     }
 
 
@@ -46,7 +46,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     private void save() {
         try (Writer fw = new FileWriter(file)) {
-            fw.write("ID, type, name, status, description" + '\n');
+            fw.write("name, description, status, id, epicId" + '\n');
 
             for (int i = 0; i < 100; i++) {
                 if (tasks.containsKey(i + 1)) {
@@ -71,7 +71,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
 
     private String toString(Task task) {
-        return task.getId() + ", " + task.getType() + ", " + task.getName() + ", " + task.getStatus() + ", " + task.getDescription();
+        return task.getName() + ", " + task.getDescription() + ", " + task.getStatus() + ", " + task.getId() + ", " + task.getEpicId();
     }
 
 
@@ -79,23 +79,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         String[] lineContent = value.split(", ");
 
         return new Task(
-                lineContent[2],
-                lineContent[4],
-                Enum.valueOf(TaskStatus.class, lineContent[3]),
-                Integer.parseInt(lineContent[0]),
-                Integer.parseInt(lineContent[1])
+                lineContent[0],
+                lineContent[1],
+                Enum.valueOf(TaskStatus.class,lineContent[2]),
+                Integer.parseInt(lineContent[3]),
+                Integer.parseInt(lineContent[4])
         );
     }
 
 
     private static String historyToString(HistoryManager manager) {
         List<Task> getIDs = List.copyOf(manager.getHistory());
-        List<String> IDs = new ArrayList<>();
+        List<String> ids = new ArrayList<>();
         for (int i = 0; i < manager.getHistory().size(); i++) {
             Task task = getIDs.get(i);
-            IDs.add(task.getId().toString());
+            ids.add(task.getId().toString());
         }
-        return String.join(", ", IDs);
+        return String.join(", ", ids);
     }
 
 
@@ -110,7 +110,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
 
-     void FileBackedTaskManager() {
+     static void FileBackedTaskManager() {
         FileBackedTaskManager fbtm = new FileBackedTaskManager();
         TaskManager taskManager = Managers.getDefault();
 

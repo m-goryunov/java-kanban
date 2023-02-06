@@ -1,23 +1,23 @@
 package Supplementary;
 
-import java.util.List;
+import java.util.HashMap;
 
 public class Epic extends Task {
 
-    private List<Integer> relatedSubtaskIds;
+    private HashMap<Integer,Integer> relatedSubtaskIds;
 
 
-    public Epic(String name, String description, TaskStatus status, Integer ID, Integer epicID, List<Integer> relatedSubtaskIds) {
+    public Epic(String name, String description, TaskStatus status, Integer ID, Integer epicID, HashMap<Integer, Integer> relatedSubtaskIds) {
         super(name, description, status, ID, epicID);
         this.relatedSubtaskIds = relatedSubtaskIds;
     }
 
-    public List<Integer> getRelatedSubtaskIds() {
+    public HashMap<Integer, Integer> getRelatedSubtaskIds() {
         return relatedSubtaskIds;
     }
 
     public void addRelatedSubtaskIds(int id){
-        relatedSubtaskIds.add(id);
+        relatedSubtaskIds.put(id, id);
     }
 
     public void removeRelatedSubtaskIds(){
@@ -27,7 +27,7 @@ public class Epic extends Task {
         relatedSubtaskIds.remove(id);
     }
 
-    public void setRelatedSubtaskIds(List<Integer> relatedSubtaskIds) {
+    public void setRelatedSubtaskIds(HashMap<Integer, Integer> relatedSubtaskIds) {
         this.relatedSubtaskIds = relatedSubtaskIds;
     }
 

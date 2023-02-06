@@ -1,2 +1,7 @@
-ID, type, name, status, description
-1, EPIC, Эпик1, NEW, Темная тема в Пачке
+name, description, status, id, epicId
+Эпик1, Темная тема в Пачке, NEW, 1, null
+Таск1, Доработать АС, NEW, 2, 1
+Таск2, Доработать АС, NEW, 3, 1
+Таск3, Доработать АС, NEW, 4, 1
+Сабтаска2, Техдолг Q2, NEW, 5, 1
+Таск4, Доработать АС, NEW, 6, 1

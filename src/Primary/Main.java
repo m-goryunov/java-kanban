@@ -3,6 +3,7 @@ package Primary;
 import Supplementary.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -71,7 +72,7 @@ public class Main {
                                     TaskStatus.NEW, null, setEpic));
                         }
                         case 3 -> taskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке",
-                                TaskStatus.NEW, null, null, new ArrayList<>()));
+                                TaskStatus.NEW, null, null, new HashMap<>()));
                     }
                 }
                 case 5 -> {

@@ -45,19 +45,21 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+
     @Override
     public Map<Integer, Task> printAllTasks() {
         return tasks;
     }
 
+
     @Override
     public void deleteAllTasks() {
         for (int i = 0; i <= tasks.size(); i++) {
-            Task task = tasks.get(i);
+            Task task = tasks.get(i + 1);
             if (task != null) {
-                historyManager.remove(task.getId());
                 epics.get(task.getEpicId()).removeRelatedSubtaskIds();
                 tasks.remove(task.getId());
+                historyManager.remove(task.getId());
             }
         }
     }
@@ -147,11 +149,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SubTask printSubTaskById(int id) {
-        SubTask task = subTasks.get(this.id);
-        if (task != null) {
-            historyManager.add(task);
+        SubTask subTask = subTasks.get(id);
+        if (subTask != null) {
+            historyManager.add(subTask);
         }
-        return task;
+        return subTask;
     }
 
     @Override
@@ -180,35 +182,56 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Map<Integer, Epic> printAllEpics() {return epics;}
+    public Map<Integer, Epic> printAllEpics() {
+        return epics;
+    }
+
 
     @Override
     public void deleteAllEpics() {
-        for (int i = 0; i <= epics.size(); i++) {
 
-            if (epics.get(i) != null) {
-                Epic epic = epics.get(i);
-                historyManager.remove(epic.getId());
+        for (Map.Entry<Integer, Epic> entry: epics.entrySet()) {
+            if (entry.getValue() != null) {
+                Epic epic = entry.getValue();
+                if (epic.getRelatedSubtaskIds() != null) {
+                    HashMap<Integer, Integer> ids = epic.getRelatedSubtaskIds();
+                    for (Map.Entry<Integer, Integer> entry2 : ids.entrySet()) {
+                        if (ids.containsKey(entry2.getKey()) && subTasks.containsKey(entry2.getKey())) {
+                            subTasks.remove(entry2.getKey());
+                            historyManager.remove(entry2.getKey());
+                        } else if (ids.containsKey(entry2.getKey()) && tasks.containsKey(entry2.getKey())) {
+                            tasks.remove(entry2.getKey());
+                            historyManager.remove(entry2.getKey());
+                        }
+                    }
+                }
                 epics.remove(epic.getId());
-                epic.removeRelatedSubtaskIds();
             }
         }
-    }
+
+        }
 
     @Override
     public Epic printEpicById(int id) {
-        Epic task = epics.get(this.id);
-        if (task != null) {
-            historyManager.add(task);
+        Epic epic = epics.get(id);
+        if (epic != null) {
+            historyManager.add(epic);
         }
-        return task;
+        return epic;
     }
 
     @Override
     public void deleteEpicById(int id) {
         if (epics.containsKey(id)) {
             Epic epic = epics.get(id);
-            epic.removeRelatedSubtaskIds();
+            HashMap<Integer, Integer> ids = epic.getRelatedSubtaskIds();
+
+            for (Map.Entry<Integer, Integer> entry : ids.entrySet()) {
+                subTasks.remove(ids.get(entry.getValue()));
+                tasks.remove(entry.getValue());
+                historyManager.remove(entry.getValue());
+            }
+
             epics.remove(epic.getId());
             historyManager.remove(epic.getId());
         } else {
@@ -221,8 +244,14 @@ public class InMemoryTaskManager implements TaskManager {
         List<Task> subTasksByEpic = new ArrayList<>();
         if (epics.get(id) != null) {
             Epic epic = epics.get(id);
-            for (int getTaskById: epic.getRelatedSubtaskIds()) {
-                subTasksByEpic.add(printSubTaskById(getTaskById));
+            HashMap<Integer, Integer> ids = epic.getRelatedSubtaskIds();
+
+            for (Map.Entry<Integer, Integer> entry : ids.entrySet()) {
+                if (subTasks.containsKey(entry.getKey())) {
+                    subTasksByEpic.add(subTasks.get(entry.getValue()));
+                } else if (tasks.containsKey(entry.getKey())) {
+                    subTasksByEpic.add(tasks.get(entry.getValue()));
+                }
             }
         }
         return subTasksByEpic;
