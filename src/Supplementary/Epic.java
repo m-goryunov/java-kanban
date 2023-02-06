@@ -1,46 +1,55 @@
 package Supplementary;
 
-import java.util.Objects;
+import java.util.List;
 
 public class Epic extends Task {
 
-    private final Integer epicID;
-    private TaskStatus epicStatus;
+    private List<Integer> relatedSubtaskIds;
 
-    public Epic(String name, String description, TaskStatus status, Integer ID, TaskType type) {
-        super(name, description, status, ID, type);
-        this.epicID = ID;
-        this.epicStatus = status;
-        this.type = type;
+
+    public Epic(String name, String description, TaskStatus status, Integer ID, Integer epicID, List<Integer> relatedSubtaskIds) {
+        super(name, description, status, ID, epicID);
+        this.relatedSubtaskIds = relatedSubtaskIds;
     }
 
+    public List<Integer> getRelatedSubtaskIds() {
+        return relatedSubtaskIds;
+    }
 
-    public void setEpicStatus(TaskStatus epicStatus) {
-        this.epicStatus = epicStatus;
+    public void addRelatedSubtaskIds(int id){
+        relatedSubtaskIds.add(id);
+    }
+
+    public void removeRelatedSubtaskIds(){
+        relatedSubtaskIds.clear();
+    }
+    public void removeRelatedSubtaskIds(int id){
+        relatedSubtaskIds.remove(id);
+    }
+
+    public void setRelatedSubtaskIds(List<Integer> relatedSubtaskIds) {
+        this.relatedSubtaskIds = relatedSubtaskIds;
+    }
+
+    @Override
+    public void setStatus(TaskStatus status) {
+        super.setStatus(status);
+    }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC;
     }
 
     @Override
     public String toString() {
         return "Epic{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                ", ID=" + ID +
-                ", type='" + type + '\'' +
+                "name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", status=" + getStatus() +
+                ", ID=" + getId() +
+                ", type='" + getType() + '\'' +
+                ", relatedSubTaskIds'" + getRelatedSubtaskIds() + '\'' +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        Epic epic = (Epic) o;
-        return Objects.equals(epicID, epic.epicID) && epicStatus == epic.epicStatus;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), epicID, epicStatus);
     }
 }

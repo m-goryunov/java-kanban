@@ -1,20 +1,26 @@
 package Supplementary;
 
-import java.util.Objects;
-
 public class Task {
-    public String name;
-    public String description;
-    public TaskStatus status;
-    public Integer ID;
-    public TaskType type;
+    private String name;
+    private String description;
+    private TaskStatus status;
+    private Integer id;
+    private Integer epicId;
 
-    public Task(String name, String description, TaskStatus status, Integer ID, TaskType type) {
+    public Task(String name, String description, TaskStatus status, Integer id, Integer epicId) {
         this.name = name;
         this.description = description;
         this.status = status;
-        this.ID = ID;
-        this.type = type;
+        this.id = id;
+        this.epicId = epicId;
+    }
+
+    public Integer getEpicId() {
+        return epicId;
+    }
+
+    public void setEpicId(Integer epicId) {
+        this.epicId = epicId;
     }
 
     @Override
@@ -23,22 +29,47 @@ public class Task {
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
-                ", ID=" + ID +
-                ", type='" + type + '\'' +
+                ", id=" + id +
+                ", epicId=" + epicId +
                 '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Task task = (Task) o;
-        return Objects.equals(name, task.name) && Objects.equals(description, task.description) && status == task.status && Objects.equals(ID, task.ID) && type == task.type;
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public int hashCode() {
-        return 0;
+    public void setName(String name) {
+        this.name = name;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public TaskType getType() {
+        return TaskType.TASK;
+    }
+
 }
+
 

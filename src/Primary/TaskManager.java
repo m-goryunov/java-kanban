@@ -4,42 +4,45 @@ import Supplementary.Epic;
 import Supplementary.SubTask;
 import Supplementary.Task;
 
+import java.util.List;
+import java.util.Map;
+
 public interface TaskManager {
     void createTask(Task task);
 
-    void updateTask(int ID, Task task);
+    void updateTask(Task task);
 
-    void printAllTasks();
+    Map<Integer,Task> printAllTasks();
 
     void deleteAllTasks();
 
-    void printTaskByID(int ID);
+    Task printTaskById(int id);
 
-    void deleteTaskByID(int ID);
+    void deleteTaskById(int id);
 
-    void createSubTask(SubTask subTask, Integer epicID);
+    void createSubTask(SubTask subTask);
 
-    void updateSubTask(int ID, SubTask subTask);
+    void updateSubTask(SubTask subTask);
 
-    void printAllSubTasks();
+    Map<Integer, SubTask> printAllSubTasks();
 
     void deleteAllSubTasks();
 
-    void printSubTaskByID(int ID);
+    SubTask printSubTaskById(int id);
 
-    void deleteSubTaskByID(int ID);
+    void deleteSubTaskById(int id);
 
     void createEpic(Epic epic);
 
-    void updateEpic(int ID, Epic epic);
+    void updateEpic(Epic epic);
 
-    void printAllEpics();
+    Map<Integer, Epic> printAllEpics();
 
     void deleteAllEpics();
 
-    void printEpicByID(int ID);
+    Epic printEpicById(int id);
 
-    void deleteEpicByID(int ID);
+    void deleteEpicById(int id);
 
-    void getAllSubtasksByEpic(int ID);
+    List<Task> getAllSubtasksByEpic(int id);
 }

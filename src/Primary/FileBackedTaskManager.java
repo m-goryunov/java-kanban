@@ -14,10 +14,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     private static final Path path = Paths.get(System.getProperty("user.home"), "/IdeaProjects/java-kanban/resources", "backedTasks.csv");
     private static File file;
+    private static final HistoryManager historyManager = Managers.getDefaultHistory();
 
 
     public static void main(String[] args) {
-
         // Тест для проверки записи из файла>>>>
 /*        FileBackedTaskManager();
         System.out.println("Tasks...\n" + tasks);
@@ -27,19 +27,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
         //Тест для проверки записи в файл>>>>
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager();
-        fileBackedTaskManager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, TaskType.TASK));
-        fileBackedTaskManager.printTaskByID(1);
-        fileBackedTaskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", TaskStatus.NEW, 2, TaskType.EPIC));
-        fileBackedTaskManager.printEpicByID(2);
-        fileBackedTaskManager.createTask(new Task("Таск2", "Доработать АС", TaskStatus.NEW, null, TaskType.TASK));
-        fileBackedTaskManager.createTask(new Task("Таск3", "Доработать АС", TaskStatus.NEW, null, TaskType.TASK));
-        fileBackedTaskManager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, null, TaskType.SUBTASK), 2);
-        fileBackedTaskManager.printSubTaskByID(5);
-        fileBackedTaskManager.createTask(new Task("Таск4", "Доработать АС", TaskStatus.NEW, null, TaskType.TASK));
-        fileBackedTaskManager.createTask(new Task("Таск5", "Доработать АС", TaskStatus.NEW, null, TaskType.TASK));
-        fileBackedTaskManager.createSubTask(new SubTask("Сабтаска1", "Техдолг Q1", TaskStatus.NEW, null, null, TaskType.SUBTASK), 2);
-        fileBackedTaskManager.createSubTask(new SubTask("Сабтаска3", "Техдолг Q3", TaskStatus.NEW, null, null, TaskType.SUBTASK), 2);
-        fileBackedTaskManager.printSubTaskByID(9);
+        fileBackedTaskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", TaskStatus.NEW, null, null, null));
+        fileBackedTaskManager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, null));
+        fileBackedTaskManager.printTaskById(1);
+        fileBackedTaskManager.printEpicById(2);
+        fileBackedTaskManager.createTask(new Task("Таск2", "Доработать АС", TaskStatus.NEW, null, null));
+        fileBackedTaskManager.createTask(new Task("Таск3", "Доработать АС", TaskStatus.NEW, null, null));
+        fileBackedTaskManager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, null));
+        fileBackedTaskManager.printSubTaskById(5);
+        fileBackedTaskManager.createTask(new Task("Таск4", "Доработать АС", TaskStatus.NEW, null, null));
     }
 
 
@@ -75,7 +71,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
 
     private String toString(Task task) {
-        return task.ID + ", " + task.type + ", " + task.name + ", " + task.status + ", " + task.description;
+        return task.getId() + ", " + task.getType() + ", " + task.getName() + ", " + task.getStatus() + ", " + task.getDescription();
     }
 
 
@@ -87,7 +83,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 lineContent[4],
                 Enum.valueOf(TaskStatus.class, lineContent[3]),
                 Integer.parseInt(lineContent[0]),
-                Enum.valueOf(TaskType.class, lineContent[1])
+                Integer.parseInt(lineContent[1])
         );
     }
 
@@ -97,7 +93,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         List<String> IDs = new ArrayList<>();
         for (int i = 0; i < manager.getHistory().size(); i++) {
             Task task = getIDs.get(i);
-            IDs.add(task.ID.toString());
+            IDs.add(task.getId().toString());
         }
         return String.join(", ", IDs);
     }
@@ -114,8 +110,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
 
-    static void FileBackedTaskManager() {
+     void FileBackedTaskManager() {
         FileBackedTaskManager fbtm = new FileBackedTaskManager();
+        TaskManager taskManager = Managers.getDefault();
+
         try (BufferedReader buffer = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
 
             while (buffer.ready()) {
@@ -141,12 +139,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 } else {
                     Task task = fbtm.fromString(line);
 
-                    if (task.type.equals(TaskType.TASK)) {
-                        tasks.put(task.ID, task);
-                    } else if (task.type == TaskType.SUBTASK) {
-                        subTasks.put(task.ID, new SubTask(task.name, task.description, task.status, task.ID, null, task.type));
-                    } else if (task.type == TaskType.EPIC) {
-                        epics.put(task.ID, new Epic(task.name, task.description, task.status, task.ID, task.type));
+                    if (task.getType().equals(TaskType.TASK)) {
+                        tasks.put(task.getId(), task);
+                    } else if (task.getType() == TaskType.SUBTASK) {
+                        subTasks.put(task.getId(), new SubTask(task.getName(), task.getDescription(), task.getStatus(), task.getId(), task.getEpicId()));
+                    } else if (task.getType() == TaskType.EPIC) {
+                        epics.put(task.getId(), new Epic(task.getName(), task.getDescription(), task.getStatus(), task.getId(), task.getId(),null));
                     }
                 }
             }
@@ -174,8 +172,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
 
     @Override
-    public void createSubTask(SubTask subTask, Integer epicID) {
-        super.createSubTask(subTask, epicID);
+    public void createSubTask(SubTask subTask) {
+        super.createSubTask(subTask);
         save();
     }
 
@@ -188,22 +186,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
 
     @Override
-    public void printTaskByID(int ID) {
-        super.printTaskByID(ID);
+    public Task printTaskById(int id) {
         save();
+        return super.printTaskById(id);
+    }
+
+    @Override
+    public SubTask printSubTaskById(int id) {
+        save();
+        return super.printSubTaskById(id);
     }
 
 
     @Override
-    public void printSubTaskByID(int ID) {
-        super.printSubTaskByID(ID);
-        save();
-    }
+    public Epic printEpicById(int id) {
 
-
-    @Override
-    public void printEpicByID(int ID) {
-        super.printEpicByID(ID);
         save();
+        return super.printEpicById(id);
     }
 }

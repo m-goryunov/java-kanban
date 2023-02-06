@@ -1,12 +1,2 @@
 ID, type, name, status, description
-1, TASK, Таск1, NEW, Доработать АС
-2, EPIC, Эпик1, NEW, Темная тема в Пачке
-3, TASK, Таск2, NEW, Доработать АС
-4, TASK, Таск3, NEW, Доработать АС
-5, SUBTASK, Сабтаска2, NEW, Техдолг Q2
-6, TASK, Таск4, NEW, Доработать АС
-7, TASK, Таск5, NEW, Доработать АС
-8, SUBTASK, Сабтаска1, NEW, Техдолг Q1
-9, SUBTASK, Сабтаска3, NEW, Техдолг Q3
-
-History: 1, 2, 5, 9
+1, EPIC, Эпик1, NEW, Темная тема в Пачке

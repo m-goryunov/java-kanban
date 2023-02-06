@@ -1,20 +1,19 @@
 package Primary;
 
-import Supplementary.Node;
 import Supplementary.Task;
 
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private static final Map<Integer, Node<Task>> nodeMap = new HashMap<>();
-    private static final CustomLinkedList<Task> customLinkedList = new CustomLinkedList<>();
+    private final Map<Integer, Node<Task>> nodeMap = new HashMap<>();
+    private final CustomLinkedList<Task> customLinkedList = new CustomLinkedList<>();
 
     @Override
     public void add(Task task) {
-        if (nodeMap.containsKey(task.ID)) {
-            remove(task.ID);
+        if (nodeMap.containsKey(task.getId())) {
+            remove(task.getId());
         }
-        nodeMap.put(task.ID, customLinkedList.linkLast(task));
+        nodeMap.put(task.getId(), customLinkedList.linkLast(task));
     }
 
 
@@ -33,7 +32,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
 
-    private static class CustomLinkedList<E> {
+    private class CustomLinkedList<E> {
 
         transient Node<E> first; //head
         transient Node<E> last; //tail
@@ -41,12 +40,14 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         List<E> getTasks() {
             List<E> history = new ArrayList<>();
-            for (int i = 0; i < customLinkedList.size; i++) {
-                history.add(get(i));
+            Node<E> current = first;
+            while (current != null) {
+                history.add(current.item);
+                current = current.next;
             }
-
             return history;
         }
+
 
         Node<E> linkLast(E e) {
             final Node<E> l = last;
@@ -61,8 +62,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             return newNode;
         }
 
-        E unlink(Node<E> x) { // он же removeNode
-            final E element = x.item;
+        void unlink(Node<E> x) { // он же removeNode
             final Node<E> next = x.next;
             final Node<E> prev = x.prev;
 
@@ -82,35 +82,19 @@ public class InMemoryHistoryManager implements HistoryManager {
 
             x.item = null;
             size--;
-            return element;
         }
 
-        public E get(int index) {
-            checkElementIndex(index);
-            return node(index).item;
-        }
+    }
 
-        Node<E> node(int index) {
+    private class Node<E> { // перенес класс сюда, так понимаю гет-сет ерры не нужны тогда
+        private E item;
+        private Node<E> next;
+        private Node<E> prev;
 
-            if (index < (size >> 1)) {
-                Node<E> x = first;
-                for (int i = 0; i < index; i++)
-                    x = x.next;
-                return x;
-            } else {
-                Node<E> x = last;
-                for (int i = size - 1; i > index; i--)
-                    x = x.prev;
-                return x;
-            }
-        }
-
-        private void checkElementIndex(int index) {
-            if (!isElementIndex(index)) System.out.println("Такого индекса нет / нет истории просмотров");
-        }
-
-        private boolean isElementIndex(int index) {
-            return index >= 0 && index < size;
+        public Node(Node<E> prev, E element, Node<E> next) {
+            this.item = element;
+            this.next = next;
+            this.prev = prev;
         }
 
     }

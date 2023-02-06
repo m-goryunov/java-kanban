@@ -1,48 +1,38 @@
 package Supplementary;
 
-import java.util.Objects;
-
 public class SubTask extends Task {
 
-    private Integer epicID;
+    public SubTask(String name, String description, TaskStatus status, Integer ID, Integer epicId) {
+        super(name, description, status, ID, epicId);
 
-    public SubTask(String name, String description, TaskStatus status, Integer ID, Integer epicID, TaskType type) {
-        super(name, description, status, ID, type);
-        this.epicID = epicID;
-        this.type = type;
     }
 
-    public Integer getEpicID() {
-        return epicID;
+    @Override
+    public Integer getEpicId() {
+        return super.getEpicId();
     }
 
-    public void setEpicID(Integer epicID) {
-        this.epicID = epicID;
+    @Override
+    public void setEpicId(Integer epicId) {
+        super.setEpicId(epicId);
+    }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.SUBTASK;
     }
 
     @Override
     public String toString() {
         return "SubTask{" +
-                "epicID=" + epicID +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                ", ID=" + ID +
-                ", type='" + type + '\'' +
+                "epicId=" + getEpicId() +
+                ", name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", status=" + getStatus() +
+                ", ID=" + getId() +
+                ", type='" + getType() + '\'' +
+                ", epicId='" + getEpicId() + '\'' +
                 '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        SubTask subTask = (SubTask) o;
-        return Objects.equals(epicID, subTask.epicID);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), epicID);
-    }
 }
