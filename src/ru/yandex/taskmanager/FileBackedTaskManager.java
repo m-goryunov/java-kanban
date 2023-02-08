@@ -7,7 +7,6 @@ import ru.yandex.model.*;
 
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,15 +30,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
         //Тест для проверки записи в файл>>>>
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager();
-        fileBackedTaskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", TaskStatus.NEW, null, null, new HashMap<>()));
-        fileBackedTaskManager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, null));
-        fileBackedTaskManager.printTaskById(1);
-        fileBackedTaskManager.printEpicById(2);
-        fileBackedTaskManager.createTask(new Task("Таск2", "Доработать АС", TaskStatus.NEW, null, null));
-        fileBackedTaskManager.createTask(new Task("Таск3", "Доработать АС", TaskStatus.NEW, null, null));
+        fileBackedTaskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", TaskStatus.NEW, null, new HashMap<>()));
+        fileBackedTaskManager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null));
+        fileBackedTaskManager.getTaskById(1);
+        fileBackedTaskManager.getEpicById(2);
+        fileBackedTaskManager.createTask(new Task("Таск2", "Доработать АС", TaskStatus.NEW, null));
+        fileBackedTaskManager.createTask(new Task("Таск3", "Доработать АС", TaskStatus.NEW, null));
         fileBackedTaskManager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 1));
-        fileBackedTaskManager.printSubTaskById(5);
-        fileBackedTaskManager.createTask(new Task("Таск4", "Доработать АС", TaskStatus.NEW, null, null));
+        fileBackedTaskManager.getSubTaskById(5);
+        fileBackedTaskManager.createTask(new Task("Таск4", "Доработать АС", TaskStatus.NEW, null));
     }
 
 
@@ -75,7 +74,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
 
     private String toString(Task task) {
-        return task.getName() + ", " + task.getDescription() + ", " + task.getStatus() + ", " + task.getId() + ", " + task.getEpicId();
+        return task.getName() + ", " + task.getDescription() + ", " + task.getStatus() + ", " + task.getId();
     }
 
 
@@ -85,8 +84,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         return new Task(lineContent[0],
                 lineContent[1],
                 Enum.valueOf(TaskStatus.class, lineContent[2]),
-                Integer.parseInt(lineContent[3]),
-                Integer.parseInt(lineContent[4]));
+                Integer.parseInt(lineContent[3])
+        );
     }
 
 
@@ -188,22 +187,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
 
     @Override
-    public Task printTaskById(int id) {
+    public Task getTaskById(int id) {
         save();
-        return super.printTaskById(id);
+        return super.getTaskById(id);
     }
 
     @Override
-    public SubTask printSubTaskById(int id) {
+    public SubTask getSubTaskById(int id) {
         save();
-        return super.printSubTaskById(id);
+        return super.getSubTaskById(id);
     }
 
 
     @Override
-    public Epic printEpicById(int id) {
+    public Epic getEpicById(int id) {
 
         save();
-        return super.printEpicById(id);
+        return super.getEpicById(id);
     }
 }

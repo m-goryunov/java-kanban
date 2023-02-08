@@ -1,12 +1,10 @@
 package ru.yandex;
 
-import ru.yandex.historymanager.HistoryManager;
 import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.util.Managers;
 import ru.yandex.model.*;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -15,29 +13,14 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
         TaskManager taskManager = Managers.getDefault();
-        HistoryManager historyManager = Managers.getDefaultHistory();
-
 
         printMenu();
         while (true) {
             switch (scanner.nextInt()) {
                 case 1 -> {
-                    for (Map.Entry<Integer, Task> entry : taskManager.printAllTasks().entrySet()) {
-                        Integer id = entry.getKey();
-                        Task task = entry.getValue();
-                        System.out.println("id: " + id + "\n" + task);
-                    }
-                    for (Map.Entry<Integer, Epic> entry : taskManager.printAllEpics().entrySet()) {
-                        Integer id = entry.getKey();
-                        Epic epic = entry.getValue();
-                        System.out.println("id: " + id + "\n" + epic);
-                    }
-
-                    for (Map.Entry<Integer, SubTask> entry : taskManager.printAllSubTasks().entrySet()) {
-                        Integer id = entry.getKey();
-                        SubTask subTask = entry.getValue();
-                        System.out.println("id: " + id + "\n" + subTask);
-                    }
+                    System.out.println(taskManager.getAllTasks().toString());
+                    System.out.println(taskManager.getAllEpics().toString());
+                    System.out.println(taskManager.getAllSubTasks().toString());
 
                 }
                 case 2 -> {
@@ -53,9 +36,9 @@ public class Main {
                     int printID = scanner.nextInt();
                     System.out.println("Какую задачу показать? \n 1. Таски \n 2. Эпики \n 3. Сабтаски");
                     switch (scanner.nextInt()) {
-                        case 1 -> System.out.println(taskManager.printTaskById(printID));
-                        case 2 -> System.out.println(taskManager.printEpicById(printID));
-                        case 3 -> System.out.println(taskManager.printSubTaskById(printID));
+                        case 1 -> System.out.println(taskManager.getTaskById(printID));
+                        case 2 -> System.out.println(taskManager.getEpicById(printID));
+                        case 3 -> System.out.println(taskManager.getSubTaskById(printID));
                     }
                 }
                 case 4 -> {
@@ -63,7 +46,7 @@ public class Main {
                     switch (scanner.nextInt()) {
                         case 1 -> {
                             taskManager.createTask(new Task("Тасочка1", "Доработать АС",
-                                    TaskStatus.NEW, null, null));
+                                    TaskStatus.NEW, null));
                         }
                         case 2 -> {
                             System.out.println("К какому Эпику относится подзадача?");
@@ -72,7 +55,7 @@ public class Main {
                                     TaskStatus.NEW, null, setEpic));
                         }
                         case 3 -> taskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке",
-                                TaskStatus.NEW, null, null, new HashMap<>()));
+                                TaskStatus.NEW, null, new HashMap<>()));
                     }
                 }
                 case 5 -> {
@@ -84,7 +67,7 @@ public class Main {
                     switch (scanner.nextInt()) {
                         case 1 -> taskManager.updateTask(new Task("Новое название"
                                 , "Новое описание"
-                                , TaskStatus.IN_PROGRESS, ID, null));
+                                , TaskStatus.IN_PROGRESS, ID));
                         case 2 -> taskManager.updateSubTask(new SubTask("Новое название"
                                 , "Новое описание"
                                 , TaskStatus.IN_PROGRESS
@@ -92,7 +75,7 @@ public class Main {
                         case 3 -> taskManager.updateEpic(new Epic("Новое название"
                                 , "Новое описание"
                                 , TaskStatus.IN_PROGRESS
-                                , ID, newEpicID, null));
+                                , ID, new HashMap<>()));
                     }
                 }
                 case 6 -> {
@@ -110,7 +93,7 @@ public class Main {
                     int epicSubtasksIds = scanner.nextInt();
                     System.out.println(taskManager.getAllSubtasksByEpic(epicSubtasksIds).toString());
                 }
-                case 8 -> System.out.println(historyManager.getHistory().toString());
+                case 8 -> System.out.println(taskManager.getHistory());
                 case 0 -> System.exit(0);
                 default -> System.out.println("Такой команды нет");
             }

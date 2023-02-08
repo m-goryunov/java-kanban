@@ -2,17 +2,17 @@ package ru.yandex.model;
 
 public class SubTask extends Task {
 
-    public SubTask(String name, String description, TaskStatus status, Integer ID, Integer epicId) {
-        super(name, description, status, ID, epicId);
+    private Integer epicId;
+
+    public SubTask(String name, String description, TaskStatus status, Integer id, Integer epicId) {
+        super(name, description, status, id);
+        this.epicId = epicId;
     }
 
-    @Override
-    public Integer getEpicId() {return super.getEpicId();}
 
-    @Override
-    public void setEpicId(Integer epicId) {
-        super.setEpicId(epicId);
-    }
+    public Integer getEpicId() {return epicId;}
+
+    public void setEpicId(Integer epicId) {this.epicId = epicId;}
 
     @Override
     public TaskType getType() {

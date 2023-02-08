@@ -3,18 +3,17 @@ package ru.yandex.taskmanager;
 import ru.yandex.model.*;
 
 import java.util.List;
-import java.util.Map;
 
 public interface TaskManager {
     void createTask(Task task);
 
     void updateTask(Task task);
 
-    Map<Integer,Task> printAllTasks();
+    List<Task> getAllTasks();
 
     void deleteAllTasks();
 
-    Task printTaskById(int id);
+    Task getTaskById(int id);
 
     void deleteTaskById(int id);
 
@@ -22,11 +21,11 @@ public interface TaskManager {
 
     void updateSubTask(SubTask subTask);
 
-    Map<Integer, SubTask> printAllSubTasks();
+    List<Task> getAllSubTasks();
 
     void deleteAllSubTasks();
 
-    SubTask printSubTaskById(int id);
+    SubTask getSubTaskById(int id);
 
     void deleteSubTaskById(int id);
 
@@ -34,13 +33,15 @@ public interface TaskManager {
 
     void updateEpic(Epic epic);
 
-    Map<Integer, Epic> printAllEpics();
+    List<Epic> getAllEpics();
 
     void deleteAllEpics();
 
-    Epic printEpicById(int id);
+    Epic getEpicById(int id);
 
     void deleteEpicById(int id);
 
-    List<Task> getAllSubtasksByEpic(int id);
+    List<SubTask> getAllSubtasksByEpic(int id);
+
+    String getHistory();
 }

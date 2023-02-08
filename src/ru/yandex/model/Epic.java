@@ -1,19 +1,18 @@
 package ru.yandex.model;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Epic extends Task {
 
-    private HashMap<Integer, Integer> relatedSubtaskIds;
+    private final Map<Integer, Integer> relatedSubtaskIds = new HashMap<>();
 
 
-    public Epic(String name, String description, TaskStatus status, Integer ID, Integer epicId, HashMap<Integer, Integer> relatedSubtaskIds) {
-        super(name, description, status, ID, epicId);
-        this.relatedSubtaskIds = relatedSubtaskIds;
-
+    public Epic(String name, String description, TaskStatus status, Integer id,  Map<Integer, Integer> relatedSubtaskIds) {
+        super(name, description, TaskStatus.NEW, id);
     }
 
-    public HashMap<Integer, Integer> getRelatedSubtaskIds() {
+    public Map<Integer, Integer> getRelatedSubtaskIds() {
         return relatedSubtaskIds;
     }
 
@@ -29,9 +28,6 @@ public class Epic extends Task {
         relatedSubtaskIds.remove(id);
     }
 
-    public void setRelatedSubtaskIds(HashMap<Integer, Integer> relatedSubtaskIds) {
-        this.relatedSubtaskIds = relatedSubtaskIds;
-    }
 
     @Override
     public void setStatus(TaskStatus status) {

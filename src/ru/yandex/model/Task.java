@@ -5,23 +5,16 @@ public class Task {
     private String description;
     private TaskStatus status;
     private Integer id;
-    private Integer epicId;
 
-    public Task(String name, String description, TaskStatus status, Integer id, Integer epicId) {
+
+    public Task(String name, String description, TaskStatus status, Integer id) {
         this.name = name;
         this.description = description;
         this.status = status;
         this.id = id;
-        this.epicId = epicId;
     }
 
-    public Integer getEpicId() {
-        return epicId;
-    }
 
-    public void setEpicId(Integer epicId) {
-        this.epicId = epicId;
-    }
 
     @Override
     public String toString() {
@@ -30,7 +23,6 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 ", id=" + id +
-                ", epicId=" + epicId +
                 '}';
     }
 
