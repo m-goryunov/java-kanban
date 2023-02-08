@@ -94,7 +94,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     }
 
-    private class Node<E> { // перенес класс сюда, так понимаю гет-сет ерры не нужны тогда
+    private class Node<E> {
         private E item;
         private Node<E> next;
         private Node<E> prev;

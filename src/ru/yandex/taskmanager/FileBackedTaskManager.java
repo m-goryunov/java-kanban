@@ -7,6 +7,7 @@ import ru.yandex.model.*;
 
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,21 +25,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         // Тест для проверки записи из файла>>>>
         /*FileBackedTaskManager();
         System.out.println("Tasks...\n" + tasks);
-        System.out.println("SubTasks...\n" +subTasks);
-        System.out.println("Epics...\n" +epics);
+        System.out.println("SubTasks...\n" + subTasks);
+        System.out.println("Epics...\n" + epics);
         System.out.println("History...\n" + historyManager.getHistory().toString());*/
 
         //Тест для проверки записи в файл>>>>
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager();
         fileBackedTaskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", TaskStatus.NEW, null, new HashMap<>()));
-        fileBackedTaskManager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null));
-        fileBackedTaskManager.getTaskById(1);
-        fileBackedTaskManager.getEpicById(2);
-        fileBackedTaskManager.createTask(new Task("Таск2", "Доработать АС", TaskStatus.NEW, null));
-        fileBackedTaskManager.createTask(new Task("Таск3", "Доработать АС", TaskStatus.NEW, null));
+        fileBackedTaskManager.getEpicById(1);
         fileBackedTaskManager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 1));
-        fileBackedTaskManager.getSubTaskById(5);
-        fileBackedTaskManager.createTask(new Task("Таск4", "Доработать АС", TaskStatus.NEW, null));
+        fileBackedTaskManager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null));
+        fileBackedTaskManager.getSubTaskById(2);
+        fileBackedTaskManager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 1));
     }
 
 
@@ -111,7 +109,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
 
-    /*static void FileBackedTaskManager() {
+    void FileBackedTaskManager() {
         FileBackedTaskManager fbtm = new FileBackedTaskManager();
         TaskManager taskManager = Managers.getDefault();
 
@@ -143,19 +141,30 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                     if (task.getType().equals(TaskType.TASK)) {
                         tasks.put(task.getId(), task);
                     } else if (task.getType() == TaskType.SUBTASK) {
-                        subTasks.put(task.getId(), new SubTask(task.getName(), task.getDescription(), task.getStatus(), task.getId(), task.getEpicId()));
+                        SubTask subTask = (SubTask) task;
+                        subTasks.put(task.getId(), new SubTask(task.getName(),
+                                task.getDescription(),
+                                task.getStatus(),
+                                task.getId(),
+                                subTask.getEpicId()));
                     } else if (task.getType() == TaskType.EPIC) {
-                        epics.put(task.getId(), new Epic(task.getName(), task.getDescription(), task.getStatus(), task.getId(), task.getId(), null));
+                        Epic epic = (Epic) task;
+                        epics.put(task.getId(), new Epic(task.getName(),
+                                task.getDescription(),
+                                task.getStatus(),
+                                task.getId(),
+                                epic.getRelatedSubtaskIds()
+                        ));
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }*/
+    }
 
 
-    static String loadFromFile(File file) {
+    static String loadFromFile(File file) { // не очень понял зачем этот метод
         try {
             return Files.readString(Path.of(file.getPath()));
         } catch (IOException e) {
@@ -201,7 +210,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     @Override
     public Epic getEpicById(int id) {
-
         save();
         return super.getEpicById(id);
     }
