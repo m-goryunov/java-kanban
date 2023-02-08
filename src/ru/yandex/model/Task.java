@@ -1,4 +1,4 @@
-package Supplementary;
+package ru.yandex.model;
 
 public class Task {
     private String name;

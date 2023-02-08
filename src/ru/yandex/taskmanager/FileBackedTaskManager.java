@@ -1,6 +1,10 @@
-package Primary;
+package ru.yandex.taskmanager;
 
-import Supplementary.*;
+import ru.yandex.exceptions.ManagerSaveException;
+import ru.yandex.historymanager.HistoryManager;
+import ru.yandex.util.Managers;
+import ru.yandex.model.*;
+
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -28,14 +32,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         //Тест для проверки записи в файл>>>>
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager();
         fileBackedTaskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", TaskStatus.NEW, null, null, new HashMap<>()));
-        fileBackedTaskManager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, 1));
+        fileBackedTaskManager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, null));
         fileBackedTaskManager.printTaskById(1);
         fileBackedTaskManager.printEpicById(2);
-        fileBackedTaskManager.createTask(new Task("Таск2", "Доработать АС", TaskStatus.NEW, null, 1));
-        fileBackedTaskManager.createTask(new Task("Таск3", "Доработать АС", TaskStatus.NEW, null, 1));
+        fileBackedTaskManager.createTask(new Task("Таск2", "Доработать АС", TaskStatus.NEW, null, null));
+        fileBackedTaskManager.createTask(new Task("Таск3", "Доработать АС", TaskStatus.NEW, null, null));
         fileBackedTaskManager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 1));
         fileBackedTaskManager.printSubTaskById(5);
-        fileBackedTaskManager.createTask(new Task("Таск4", "Доработать АС", TaskStatus.NEW, null, 1));
+        fileBackedTaskManager.createTask(new Task("Таск4", "Доработать АС", TaskStatus.NEW, null, null));
     }
 
 
@@ -78,13 +82,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     private Task fromString(String value) {
         String[] lineContent = value.split(", ");
 
-        return new Task(
-                lineContent[0],
+        return new Task(lineContent[0],
                 lineContent[1],
-                Enum.valueOf(TaskStatus.class,lineContent[2]),
+                Enum.valueOf(TaskStatus.class, lineContent[2]),
                 Integer.parseInt(lineContent[3]),
-                Integer.parseInt(lineContent[4])
-        );
+                Integer.parseInt(lineContent[4]));
     }
 
 
@@ -110,7 +112,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
 
-     static void FileBackedTaskManager() {
+    /*static void FileBackedTaskManager() {
         FileBackedTaskManager fbtm = new FileBackedTaskManager();
         TaskManager taskManager = Managers.getDefault();
 
@@ -144,14 +146,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                     } else if (task.getType() == TaskType.SUBTASK) {
                         subTasks.put(task.getId(), new SubTask(task.getName(), task.getDescription(), task.getStatus(), task.getId(), task.getEpicId()));
                     } else if (task.getType() == TaskType.EPIC) {
-                        epics.put(task.getId(), new Epic(task.getName(), task.getDescription(), task.getStatus(), task.getId(), task.getId(),null));
+                        epics.put(task.getId(), new Epic(task.getName(), task.getDescription(), task.getStatus(), task.getId(), task.getId(), null));
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
 
     static String loadFromFile(File file) {

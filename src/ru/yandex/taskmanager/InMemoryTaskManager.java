@@ -1,9 +1,8 @@
-package Primary;
+package ru.yandex.taskmanager;
 
-import Supplementary.Epic;
-import Supplementary.SubTask;
-import Supplementary.Task;
-import Supplementary.TaskStatus;
+import ru.yandex.historymanager.HistoryManager;
+import ru.yandex.util.*;
+import ru.yandex.model.*;
 
 import java.util.*;
 
@@ -23,23 +22,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createTask(Task task) {
-
-        if (epics.containsKey(task.getEpicId())) {
-            int setId = getId();
-            task.setId(setId);
-            epics.get(task.getEpicId()).addRelatedSubtaskIds(task.getId());
-            tasks.put(setId, task);
-        } else {
-            System.out.println("Для сабтаски не создан Эпик!");
-
-        }
+        int setId = getId();
+        task.setId(setId);
+        tasks.put(setId, task);
     }
+
 
     @Override
     public void updateTask(Task task) {
         if (tasks.containsKey(id)) {
             tasks.put(id, task);
-            updateEpicStatus(task.getEpicId());
         } else {
             System.out.println("Такой id не существует.");
         }
@@ -57,7 +49,6 @@ public class InMemoryTaskManager implements TaskManager {
         for (int i = 0; i <= tasks.size(); i++) {
             Task task = tasks.get(i + 1);
             if (task != null) {
-                epics.get(task.getEpicId()).removeRelatedSubtaskIds();
                 tasks.remove(task.getId());
                 historyManager.remove(task.getId());
             }
@@ -79,7 +70,6 @@ public class InMemoryTaskManager implements TaskManager {
         if (tasks.containsKey(id)) {
             Task task = tasks.get(id);
             historyManager.remove(task.getId());
-            epics.get(task.getEpicId()).removeRelatedSubtaskIds(task.getId());
             tasks.remove(task.getId());
         } else {
             System.out.println("Такой id не существует!");
@@ -127,10 +117,12 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+
     @Override
     public Map<Integer, SubTask> printAllSubTasks() {
         return subTasks;
     }
+
 
     @Override
     public void deleteAllSubTasks() {
@@ -146,6 +138,7 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(TaskStatus.NEW);
         }
     }
+
 
     @Override
     public SubTask printSubTaskById(int id) {
@@ -190,7 +183,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllEpics() {
 
-        for (Map.Entry<Integer, Epic> entry: epics.entrySet()) {
+        for (Map.Entry<Integer, Epic> entry : epics.entrySet()) {
             if (entry.getValue() != null) {
                 Epic epic = entry.getValue();
                 if (epic.getRelatedSubtaskIds() != null) {
@@ -199,9 +192,6 @@ public class InMemoryTaskManager implements TaskManager {
                         if (ids.containsKey(entry2.getKey()) && subTasks.containsKey(entry2.getKey())) {
                             subTasks.remove(entry2.getKey());
                             historyManager.remove(entry2.getKey());
-                        } else if (ids.containsKey(entry2.getKey()) && tasks.containsKey(entry2.getKey())) {
-                            tasks.remove(entry2.getKey());
-                            historyManager.remove(entry2.getKey());
                         }
                     }
                 }
@@ -209,7 +199,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
 
-        }
+    }
 
     @Override
     public Epic printEpicById(int id) {
@@ -228,7 +218,6 @@ public class InMemoryTaskManager implements TaskManager {
 
             for (Map.Entry<Integer, Integer> entry : ids.entrySet()) {
                 subTasks.remove(ids.get(entry.getValue()));
-                tasks.remove(entry.getValue());
                 historyManager.remove(entry.getValue());
             }
 
@@ -249,8 +238,6 @@ public class InMemoryTaskManager implements TaskManager {
             for (Map.Entry<Integer, Integer> entry : ids.entrySet()) {
                 if (subTasks.containsKey(entry.getKey())) {
                     subTasksByEpic.add(subTasks.get(entry.getValue()));
-                } else if (tasks.containsKey(entry.getKey())) {
-                    subTasksByEpic.add(tasks.get(entry.getValue()));
                 }
             }
         }

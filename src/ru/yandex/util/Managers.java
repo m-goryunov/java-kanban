@@ -1,4 +1,9 @@
-package Primary;
+package ru.yandex.util;
+
+import ru.yandex.historymanager.HistoryManager;
+import ru.yandex.historymanager.InMemoryHistoryManager;
+import ru.yandex.taskmanager.InMemoryTaskManager;
+import ru.yandex.taskmanager.TaskManager;
 
 public class Managers {
     private Managers() {

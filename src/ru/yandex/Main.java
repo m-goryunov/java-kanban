@@ -1,8 +1,10 @@
-package Primary;
+package ru.yandex;
 
-import Supplementary.*;
+import ru.yandex.historymanager.HistoryManager;
+import ru.yandex.taskmanager.TaskManager;
+import ru.yandex.util.Managers;
+import ru.yandex.model.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -60,10 +62,8 @@ public class Main {
                     System.out.println("Введите тип задачи: \n \n 1. Task \n 2. SubTask \n 3. Epic");
                     switch (scanner.nextInt()) {
                         case 1 -> {
-                            System.out.println("К какому Эпику относится подзадача?");
-                            Integer setEpic = scanner.nextInt();
                             taskManager.createTask(new Task("Тасочка1", "Доработать АС",
-                                    TaskStatus.NEW, null, setEpic));
+                                    TaskStatus.NEW, null, null));
                         }
                         case 2 -> {
                             System.out.println("К какому Эпику относится подзадача?");
@@ -84,7 +84,7 @@ public class Main {
                     switch (scanner.nextInt()) {
                         case 1 -> taskManager.updateTask(new Task("Новое название"
                                 , "Новое описание"
-                                , TaskStatus.IN_PROGRESS, ID, newEpicID));
+                                , TaskStatus.IN_PROGRESS, ID, null));
                         case 2 -> taskManager.updateSubTask(new SubTask("Новое название"
                                 , "Новое описание"
                                 , TaskStatus.IN_PROGRESS

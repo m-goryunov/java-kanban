@@ -1,6 +1,6 @@
-package Primary;
+package ru.yandex.historymanager;
 
-import Supplementary.Task;
+import ru.yandex.model.*;
 
 import java.util.List;
 

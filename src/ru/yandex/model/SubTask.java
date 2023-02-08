@@ -1,16 +1,13 @@
-package Supplementary;
+package ru.yandex.model;
 
 public class SubTask extends Task {
 
     public SubTask(String name, String description, TaskStatus status, Integer ID, Integer epicId) {
         super(name, description, status, ID, epicId);
-
     }
 
     @Override
-    public Integer getEpicId() {
-        return super.getEpicId();
-    }
+    public Integer getEpicId() {return super.getEpicId();}
 
     @Override
     public void setEpicId(Integer epicId) {

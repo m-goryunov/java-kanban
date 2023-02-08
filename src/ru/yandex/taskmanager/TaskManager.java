@@ -1,8 +1,6 @@
-package Primary;
+package ru.yandex.taskmanager;
 
-import Supplementary.Epic;
-import Supplementary.SubTask;
-import Supplementary.Task;
+import ru.yandex.model.*;
 
 import java.util.List;
 import java.util.Map;

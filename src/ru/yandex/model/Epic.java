@@ -1,29 +1,31 @@
-package Supplementary;
+package ru.yandex.model;
 
 import java.util.HashMap;
 
 public class Epic extends Task {
 
-    private HashMap<Integer,Integer> relatedSubtaskIds;
+    private HashMap<Integer, Integer> relatedSubtaskIds;
 
 
-    public Epic(String name, String description, TaskStatus status, Integer ID, Integer epicID, HashMap<Integer, Integer> relatedSubtaskIds) {
-        super(name, description, status, ID, epicID);
+    public Epic(String name, String description, TaskStatus status, Integer ID, Integer epicId, HashMap<Integer, Integer> relatedSubtaskIds) {
+        super(name, description, status, ID, epicId);
         this.relatedSubtaskIds = relatedSubtaskIds;
+
     }
 
     public HashMap<Integer, Integer> getRelatedSubtaskIds() {
         return relatedSubtaskIds;
     }
 
-    public void addRelatedSubtaskIds(int id){
+    public void addRelatedSubtaskIds(int id) {
         relatedSubtaskIds.put(id, id);
     }
 
-    public void removeRelatedSubtaskIds(){
+    public void removeRelatedSubtaskIds() {
         relatedSubtaskIds.clear();
     }
-    public void removeRelatedSubtaskIds(int id){
+
+    public void removeRelatedSubtaskIds(int id) {
         relatedSubtaskIds.remove(id);
     }
 
