@@ -1,4 +1,4 @@
-package ru.yandex.historymanager;
+package ru.yandex.taskmanager;
 
 import ru.yandex.model.*;
 

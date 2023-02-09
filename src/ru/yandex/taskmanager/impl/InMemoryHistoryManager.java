@@ -1,6 +1,7 @@
-package ru.yandex.historymanager;
+package ru.yandex.taskmanager.impl;
 
 import ru.yandex.model.*;
+import ru.yandex.taskmanager.HistoryManager;
 
 import java.util.*;
 
@@ -27,10 +28,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void removeAll() {
-        for (Integer id : nodeMap.keySet()) {
-            customLinkedList.unlink(nodeMap.get(id));
-            nodeMap.remove(id);
-        }
+        customLinkedList.first = null;
+        customLinkedList.last = null;
+        nodeMap.clear();
     }
 
 
@@ -40,7 +40,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
 
-    private class CustomLinkedList<E> {
+    private static class CustomLinkedList<E> {
 
         transient Node<E> first; //head
         transient Node<E> last; //tail
@@ -94,7 +94,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     }
 
-    private class Node<E> {
+    private static class Node<E> {
         private E item;
         private Node<E> next;
         private Node<E> prev;

@@ -1,8 +1,8 @@
 package ru.yandex.util;
 
-import ru.yandex.historymanager.HistoryManager;
-import ru.yandex.historymanager.InMemoryHistoryManager;
-import ru.yandex.taskmanager.InMemoryTaskManager;
+import ru.yandex.taskmanager.HistoryManager;
+import ru.yandex.taskmanager.impl.InMemoryHistoryManager;
+import ru.yandex.taskmanager.impl.InMemoryTaskManager;
 import ru.yandex.taskmanager.TaskManager;
 
 public class Managers {

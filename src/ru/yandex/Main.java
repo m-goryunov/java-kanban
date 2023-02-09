@@ -54,8 +54,7 @@ public class Main {
                             taskManager.createSubTask(new SubTask("Сабтаска1", "Техдолг Q1",
                                     TaskStatus.NEW, null, setEpic));
                         }
-                        case 3 -> taskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке",
-                                TaskStatus.NEW, null, new HashMap<>()));
+                        case 3 -> taskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null));
                     }
                 }
                 case 5 -> {
@@ -74,8 +73,7 @@ public class Main {
                                 , ID, newEpicID));
                         case 3 -> taskManager.updateEpic(new Epic("Новое название"
                                 , "Новое описание"
-                                , TaskStatus.IN_PROGRESS
-                                , ID, new HashMap<>()));
+                                , ID));
                     }
                 }
                 case 6 -> {
@@ -93,7 +91,7 @@ public class Main {
                     int epicSubtasksIds = scanner.nextInt();
                     System.out.println(taskManager.getAllSubtasksByEpic(epicSubtasksIds).toString());
                 }
-                case 8 -> System.out.println(taskManager.getHistory());
+                case 8 -> System.out.println(taskManager.getHistory().toString());
                 case 0 -> System.exit(0);
                 default -> System.out.println("Такой команды нет");
             }

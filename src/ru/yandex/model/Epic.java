@@ -8,7 +8,7 @@ public class Epic extends Task {
     private final Map<Integer, Integer> relatedSubtaskIds = new HashMap<>();
 
 
-    public Epic(String name, String description, TaskStatus status, Integer id,  Map<Integer, Integer> relatedSubtaskIds) {
+    public Epic(String name, String description, Integer id) {
         super(name, description, TaskStatus.NEW, id);
     }
 
@@ -46,7 +46,6 @@ public class Epic extends Task {
                 ", description='" + getDescription() + '\'' +
                 ", status=" + getStatus() +
                 ", ID=" + getId() +
-                ", type='" + getType() + '\'' +
                 ", relatedSubTaskIds'" + getRelatedSubtaskIds() + '\'' +
                 '}';
     }
