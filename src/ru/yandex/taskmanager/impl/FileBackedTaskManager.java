@@ -11,9 +11,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
+public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    private File file;
+    private final File file;
     private static final String title = "NAME, DESCRIPTION, STATUS, ID, TYPE, EPIC_ID";
 
 
@@ -37,7 +37,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
             if (!historyManager.getHistory().isEmpty()) {
                 fw.write('\n');
-                fw.write("History: " + historyToString(historyManager));
+                fw.write(historyToString(historyManager));
             }
 
         } catch (IOException e) {
@@ -67,9 +67,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                     Integer.parseInt(lineContent[3]),
                     Integer.parseInt(lineContent[5]));
         } else {
-            return new Epic(lineContent[0],
+            Epic epic = new Epic(lineContent[0],
                     lineContent[1],
                     Integer.parseInt(lineContent[3]));
+            epic.setStatus(Enum.valueOf(TaskStatus.class, lineContent[2]));
+            return epic;
         }
     }
 
@@ -81,13 +83,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             Task task = getIDs.get(i);
             ids.add(task.getId().toString());
         }
-        return String.join(", ", ids);
+        return String.join(",", ids);
     }
 
 
     private static List<Integer> historyFromString(String value) {
         List<Integer> history = new ArrayList<>();
-        String[] values = value.split(", ");
+        String[] values = value.split(",");
 
         for (String s : values) {
             history.add(Integer.parseInt(s));
@@ -106,8 +108,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 if (line.equals("") || line.startsWith("NAME")) {
                     System.out.println("Пустая!");
                     continue;
-                } else if (line.startsWith("History: ")) {
-                    line = line.substring(9);
+
+                } else if (line.matches("[a-zA-Z ]*\\d+.*")) {
                     List<Integer> IDs = List.copyOf(historyFromString(line));
 
                     for (Integer id : IDs) {
@@ -122,13 +124,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                     System.out.println("History... " + manager.getHistory().toString());
                 } else {
                     Task task = fromString(line);
+                    if (manager.id < task.getId()) {
+                        manager.id = task.getId();
+                    }
+
 
                     if (task.getType().equals(TaskType.TASK)) {
                         manager.tasks.put(task.getId(), task);
                     } else if (task.getType() == TaskType.SUBTASK) {
                         SubTask subTask = (SubTask) task;
-                        subTask = new SubTask(task.getName(), task.getDescription(), task.getStatus(), task.getId(), subTask.getEpicId());
                         manager.subTasks.put(task.getId(), subTask);
+                        manager.epics.get(subTask.getEpicId()).addRelatedSubtaskIds(subTask.getId());
                     } else if (task.getType() == TaskType.EPIC) {
                         Epic epic = new Epic(task.getName(), task.getDescription(), task.getId());
                         manager.epics.put(task.getId(), epic);
@@ -225,6 +231,24 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     public void deleteEpicById(int id) {
         save();
         super.deleteEpicById(id);
+    }
+
+    @Override
+    public void updateTask(Task task) {
+        save();
+        super.updateTask(task);
+    }
+
+    @Override
+    public void updateSubTask(SubTask subTask) {
+        save();
+        super.updateSubTask(subTask);
+    }
+
+    @Override
+    public void updateEpic(Epic epic) {
+        save();
+        super.updateEpic(epic);
     }
 
     public static void main(String[] args) {
