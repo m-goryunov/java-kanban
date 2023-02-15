@@ -103,7 +103,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    void updateEpicStatus(Integer id) {
+    public void updateEpicStatus(Integer id) {
         Epic epic = epics.get(id);
         int countNew = 0;
         int countDone = 0;
@@ -131,7 +131,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getAllSubTasks() {
-        return List.copyOf(tasks.values());
+        return List.copyOf(subTasks.values());
     }
 
 
