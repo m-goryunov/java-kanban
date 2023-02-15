@@ -1,7 +1,2 @@
 NAME, DESCRIPTION, STATUS, ID, TYPE, EPIC_ID
-Таск1, Доработать АС, NEW, 3, TASK
 Эпик1, Темная тема в Пачке, NEW, 1, EPIC
-Сабтаска2, Техдолг Q2, NEW, 2, SUBTASK, 1
-Сабтаска2, Техдолг Q2, NEW, 4, SUBTASK, 1
-
-1,2

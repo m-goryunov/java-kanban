@@ -3,8 +3,6 @@ package ru.yandex;
 import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.util.Managers;
 import ru.yandex.model.*;
-
-import java.util.HashMap;
 import java.util.Scanner;
 
 public class Main {

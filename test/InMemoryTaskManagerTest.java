@@ -1,7 +1,6 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import ru.yandex.model.Epic;
 import ru.yandex.model.SubTask;
 import ru.yandex.model.Task;
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ru.yandex.model.TaskStatus.*;
-import static ru.yandex.model.TaskStatus.DONE;
 
 
 public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {

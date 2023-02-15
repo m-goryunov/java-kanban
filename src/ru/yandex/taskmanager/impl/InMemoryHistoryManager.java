@@ -26,13 +26,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    @Override
-    public void removeAll() {
-        customLinkedList.first = null;
-        customLinkedList.last = null;
-        nodeMap.clear();
-    }
-
 
     @Override
     public List<Task> getHistory() {

@@ -106,7 +106,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             while (buffer.ready()) {
                 String line = buffer.readLine();
                 if (line.equals("") || line.startsWith("NAME")) {
-                    System.out.println("Пустая!");
                     continue;
 
                 } else if (line.matches("[a-zA-Z ]*\\d+.*")) {
@@ -121,7 +120,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                             manager.historyManager.add(manager.epics.get(id));
                         }
                     }
-                    System.out.println("History... " + manager.getHistory().toString());
+                    //System.out.println("History... " + manager.getHistory().toString());
                 } else {
                     Task task = fromString(line);
                     if (manager.id < task.getId()) {
@@ -139,12 +138,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         Epic epic = new Epic(task.getName(), task.getDescription(), task.getId());
                         manager.epics.put(task.getId(), epic);
                     }
-                    System.out.println(manager.tasks);
+/*                    System.out.println(manager.tasks);
                     System.out.println("======");
                     System.out.println(manager.subTasks);
                     System.out.println("======");
                     System.out.println(manager.epics);
-                    System.out.println("======");
+                    System.out.println("======");*/
                 }
             }
         } catch (IOException e) {
