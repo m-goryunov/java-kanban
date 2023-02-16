@@ -1,20 +1,24 @@
 package ru.yandex.model;
 
+import java.time.LocalDateTime;
+
 public class Task {
     private String name;
     private String description;
     private TaskStatus status;
     private Integer id;
+    private long duration;
+    private LocalDateTime startTime;
 
 
-    public Task(String name, String description, TaskStatus status, Integer id) {
+    public Task(String name, String description, TaskStatus status, Integer id, long duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.status = status;
         this.id = id;
+        this.duration = duration;
+        this.startTime = startTime;
     }
-
-
 
     @Override
     public String toString() {
@@ -23,6 +27,8 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 ", id=" + id +
+                ", duration=" + duration +
+                ", startTime=" + startTime +
                 '}';
     }
 
@@ -62,6 +68,17 @@ public class Task {
         return TaskType.TASK;
     }
 
+    public long getDuration() {return duration;}
+
+    public void setDuration(long duration) {this.duration = duration;}
+
+    public LocalDateTime getStartTime() {return startTime;}
+
+    public void setStartTime(LocalDateTime startTime) {this.startTime = startTime;}
+
+    public LocalDateTime getEndTime(){
+        return getStartTime().plusMinutes(getDuration());
+    }
 }
 
 

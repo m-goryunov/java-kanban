@@ -1,15 +1,17 @@
 package ru.yandex.model;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Epic extends Task {
 
     private final Map<Integer, Integer> relatedSubtaskIds = new HashMap<>();
+    private final LocalDateTime endTime;
 
 
-    public Epic(String name, String description, Integer id) {
-        super(name, description, TaskStatus.NEW, id);
+    public Epic(String name, String description, Integer id, long duration, LocalDateTime startTime) {
+        super(name, description, TaskStatus.NEW, id, duration, startTime);
     }
 
     public Map<Integer, Integer> getRelatedSubtaskIds() {

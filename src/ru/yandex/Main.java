@@ -3,6 +3,8 @@ package ru.yandex;
 import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.util.Managers;
 import ru.yandex.model.*;
+
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class Main {
@@ -44,15 +46,15 @@ public class Main {
                     switch (scanner.nextInt()) {
                         case 1 -> {
                             taskManager.createTask(new Task("Тасочка1", "Доработать АС",
-                                    TaskStatus.NEW, null));
+                                    TaskStatus.NEW, null, (60 * 2), LocalDateTime.now()));
                         }
                         case 2 -> {
                             System.out.println("К какому Эпику относится подзадача?");
                             Integer setEpic = scanner.nextInt();
                             taskManager.createSubTask(new SubTask("Сабтаска1", "Техдолг Q1",
-                                    TaskStatus.NEW, null, setEpic));
+                                    TaskStatus.NEW, null, (60 * 3), LocalDateTime.now(), setEpic));
                         }
-                        case 3 -> taskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null));
+                        case 3 -> taskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null, (60 * 4), LocalDateTime.now()));
                     }
                 }
                 case 5 -> {
@@ -64,14 +66,19 @@ public class Main {
                     switch (scanner.nextInt()) {
                         case 1 -> taskManager.updateTask(new Task("Новое название"
                                 , "Новое описание"
-                                , TaskStatus.IN_PROGRESS, ID));
+                                , TaskStatus.IN_PROGRESS, ID,
+                                (60 * 2),
+                                LocalDateTime.now()));
                         case 2 -> taskManager.updateSubTask(new SubTask("Новое название"
                                 , "Новое описание"
                                 , TaskStatus.IN_PROGRESS
-                                , ID, newEpicID));
+                                , ID
+                                , (60 * 3)
+                                , LocalDateTime.now()
+                                , newEpicID));
                         case 3 -> taskManager.updateEpic(new Epic("Новое название"
                                 , "Новое описание"
-                                , ID));
+                                , ID,(60*4), LocalDateTime.now()));
                     }
                 }
                 case 6 -> {

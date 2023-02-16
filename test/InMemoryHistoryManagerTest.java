@@ -13,7 +13,7 @@ import java.util.List;
 public class InMemoryHistoryManagerTest extends InMemoryHistoryManager {
 
     @Test
-    void addIsEmpty() {
+    void historyManagerTest() {
         TaskManager taskManager = Managers.getDefault();
 
         Epic epic = new Epic("Эпик1", "Темная тема в Пачке", null);
