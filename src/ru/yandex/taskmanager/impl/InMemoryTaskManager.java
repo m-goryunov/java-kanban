@@ -5,6 +5,7 @@ import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.util.*;
 import ru.yandex.model.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -27,18 +28,25 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createTask(Task task) {
-        int setId = getId();
-        task.setId(setId);
-        tasks.put(setId, task);
+
+        if (getPrioritizedTasks().contains(task) && !getPrioritizedTasks().isEmpty()) { //надо все искать по датам!!
+            throw new IllegalStateException("Можно выполнять не более 1 задачи в один день!");
+        } else {
+            int setId = getId();
+            task.setId(setId);
+            tasks.put(setId, task);
+        }
     }
 
 
     @Override
     public void updateTask(Task task) {
-        if (tasks.containsKey(task.getId())) {
-            tasks.put(task.getId(), task);
-        } else {
-            System.out.println("Такой id не существует.");
+        for (Task t : tasks.values()) {
+            if (tasks.containsKey(task.getId()) && !task.getStartTime().equals(t.getStartTime())) {
+                tasks.put(task.getId(), task);
+            } else {
+                throw new IllegalStateException("Можно выполнять не более 1 задачи в один день!");
+            }
         }
     }
 
@@ -81,25 +89,39 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createSubTask(SubTask subTask) {
-        if (epics.containsKey(subTask.getEpicId())) {
-            int setId = getId();
-            subTask.setId(setId);
-            epics.get(subTask.getEpicId()).addRelatedSubtaskIds(subTask.getId());
-            subTasks.put(setId, subTask);
-            updateEpicStatus(subTask.getEpicId());
-        } else {
-            System.out.println("Для сабтаски не создан Эпик!");
 
+        if (!subTasks.isEmpty()) {
+            for (SubTask s : subTasks.values()) {
+                if (!subTask.getStartTime().equals(s.getStartTime()) && !subTask.getId().equals(s.getId())) {
+                    if (epics.containsKey(subTask.getEpicId())) {
+                        int setId = getId();
+                        subTask.setId(setId);
+                        epics.get(subTask.getEpicId()).addRelatedSubtaskIds(subTask.getId());
+                        subTasks.put(setId, subTask);
+                        updateEpicStatus(subTask.getEpicId());
+                        setEpicCalendarization(subTask.getEpicId());
+                    } else {
+                        System.out.println("Для сабтаски не создан Эпик!");
+
+                    }
+                } else {
+                    throw new IllegalStateException("Можно выполнять не более 1 задачи в один день!");
+                }
+            }
         }
+
     }
 
     @Override
     public void updateSubTask(SubTask subTask) {
-        if (subTasks.containsKey(subTask.getId())) {
-            subTasks.put(subTask.getId(), subTask);
-            updateEpicStatus(subTask.getEpicId());
-        } else {
-            System.out.println("Такой id не существует");
+        for (SubTask s : subTasks.values()) {
+            if (subTasks.containsKey(subTask.getId()) && !subTask.getStartTime().equals(s.getStartTime())) {
+                subTasks.put(subTask.getId(), subTask);
+                updateEpicStatus(subTask.getEpicId());
+                setEpicCalendarization(subTask.getEpicId());
+            } else {
+                throw new IllegalStateException("Можно выполнять не более 1 задачи в один день!");
+            }
         }
     }
 
@@ -129,6 +151,25 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
 
+    /*Продолжительность эпика — сумма продолжительности всех его подзадач.
+      Время начала — дата старта самой ранней подзадачи, а время завершения — время окончания самой поздней из задач*/
+
+    public void setEpicCalendarization(Integer id) {
+        Epic epic = epics.get(id);
+        long durationCount = 0;
+        LocalDateTime tempDate;
+        Map<Integer, Integer> ids = epic.getRelatedSubtaskIds();
+        for (Integer subTaskId : ids.keySet()) {
+            durationCount += subTasks.get(subTaskId).getDuration();
+            tempDate = subTasks.get(subTaskId).getStartTime();
+            if (tempDate.isAfter(epic.getStartTime())) {
+                epic.setStartTime(tempDate);
+            }
+        }
+        epic.setDuration(durationCount);
+        epic.setEndTime(epic.getEndTime());
+    }
+
     @Override
     public List<Task> getAllSubTasks() {
         return List.copyOf(subTasks.values());
@@ -144,6 +185,9 @@ public class InMemoryTaskManager implements TaskManager {
         for (Epic epic : epics.values()) {
             epic.removeRelatedSubtaskIds();
             epic.setStatus(TaskStatus.NEW);
+            epic.setStartTime(null);
+            epic.setDuration(0);
+            epic.setEndTime(null);
         }
     }
 
@@ -162,6 +206,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (subTasks.containsKey(id)) {
             SubTask subTask = subTasks.remove(id);
             epics.get(subTask.getEpicId()).removeRelatedSubtaskIds(subTask.getId());
+            setEpicCalendarization(subTask.getEpicId());
             updateEpicStatus(subTask.getEpicId());
             historyManager.remove(id);
         }
@@ -238,5 +283,28 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         return subTasksByEpic;
+    }
+
+    @Override
+    public TreeSet<Task> getPrioritizedTasks() {
+
+        Comparator<Task> comparator = (o1, o2) -> {
+
+            if (o1.getStartTime() == null) {
+                return 1;
+            } else if (o2.getStartTime() == null) {
+                return -1;
+            } else if (o1.getStartTime().isBefore(o2.getStartTime())) {
+                return 1;
+            } else if (o2.getStartTime().isBefore(o1.getStartTime())) {
+                return -1;
+            } else {
+                return 0;
+            }
+        };
+        TreeSet<Task> prioritized = new TreeSet<>(comparator);
+        prioritized.addAll(tasks.values());
+        prioritized.addAll(subTasks.values());
+        return prioritized;
     }
 }

@@ -6,6 +6,7 @@ import ru.yandex.model.SubTask;
 import ru.yandex.model.Task;
 import ru.yandex.taskmanager.impl.InMemoryTaskManager;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +16,15 @@ import static ru.yandex.model.TaskStatus.*;
 public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @BeforeEach
-    void createManager() {manager = new InMemoryTaskManager();}
+    void createManager() {
+        manager = new InMemoryTaskManager();
+    }
 
 
     @Test
     void getAllTasks() {
-        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null);
-        Task task1 = new Task("Test addNewTask", "Test addNewTask description", NEW, null);
+        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now());
+        Task task1 = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now());
         List<Task> expTasks = new ArrayList<>();
         expTasks.add(task);
         expTasks.add(task1);
@@ -36,10 +39,10 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
 
     @Test
     void getAllSubTasks() {
-        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null);
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
-        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 1);
-        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 1);
+        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
+        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
         List<Task> expTasks = new ArrayList<>();
         expTasks.add(subTask);
         expTasks.add(subTask1);
@@ -54,8 +57,8 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
 
     @Test
     void getAllEpics() {
-        Epic epic = new Epic("Test addNewTask", "Test addNewTask description", 1);
-        Epic epic1 = new Epic("Test addNewTask", "Test addNewTask description", 2);
+        Epic epic = new Epic("Test addNewTask", "Test addNewTask description", 1, 60 * 48, LocalDateTime.now(), null);
+        Epic epic1 = new Epic("Test addNewTask", "Test addNewTask description", 2, 60 * 48, LocalDateTime.now(), null);
         List<Epic> expEpics = new ArrayList<>();
         expEpics.add(epic);
         expEpics.add(epic1);
@@ -71,10 +74,10 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
 
     @Test
     void getAllSubtasksByEpic() {
-        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null);
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
-        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 1);
-        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 1);
+        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
+        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
         manager.createSubTask(subTask);
         manager.createSubTask(subTask1);
 
@@ -90,10 +93,10 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
 
     @Test
     void updateEpicStatus() {
-        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null);
-        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 1);
-        SubTask subTask2 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 1);
-        SubTask subTask3 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 1);
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, LocalDateTime.now(), null);
+        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
+        SubTask subTask2 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
+        SubTask subTask3 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
         manager.createEpic(epic);
         manager.createSubTask(subTask1);
         manager.createSubTask(subTask2);

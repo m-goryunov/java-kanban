@@ -7,11 +7,12 @@ import java.util.Map;
 public class Epic extends Task {
 
     private final Map<Integer, Integer> relatedSubtaskIds = new HashMap<>();
-    private final LocalDateTime endTime;
+    private LocalDateTime endTime;
 
 
-    public Epic(String name, String description, Integer id, long duration, LocalDateTime startTime) {
+    public Epic(String name, String description, Integer id, long duration, LocalDateTime startTime, LocalDateTime endTime) {
         super(name, description, TaskStatus.NEW, id, duration, startTime);
+        this.endTime = endTime;
     }
 
     public Map<Integer, Integer> getRelatedSubtaskIds() {
@@ -31,6 +32,10 @@ public class Epic extends Task {
     }
 
 
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
     @Override
     public void setStatus(TaskStatus status) {
         super.setStatus(status);
@@ -49,6 +54,9 @@ public class Epic extends Task {
                 ", status=" + getStatus() +
                 ", ID=" + getId() +
                 ", relatedSubTaskIds'" + getRelatedSubtaskIds() + '\'' +
+                ", duration=" + getDuration() + " min." +
+                ", startTime=" + dateFormatter(getStartTime()) +
+                ", endTime=" + dateFormatter(getEndTime()) +
                 '}';
     }
 }

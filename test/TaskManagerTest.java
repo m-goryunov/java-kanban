@@ -6,6 +6,7 @@ import ru.yandex.taskmanager.TaskManager;
 
 import static ru.yandex.model.TaskStatus.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -15,7 +16,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void createTask() {
 
-        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null);
+        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now());
         manager.createTask(task);
         final Task savedTask = manager.getTaskById(task.getId());
 
@@ -31,16 +32,16 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void updateTask() {
-        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null);
+        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now());
         manager.createTask(task);
-        Task updTask = new Task("Test updated name", "Test updated description", IN_PROGRESS, task.getId());
+        Task updTask = new Task("Test updated name", "Test updated description", IN_PROGRESS, task.getId(), 60 * 48, LocalDateTime.now());
         manager.updateTask(updTask);
         final List<Task> actTasks = manager.getAllTasks();
         Assertions.assertNotNull(actTasks, "Задачи на возвращаются.");
         Assertions.assertEquals(1, actTasks.size(), "Неверное количество задач.");
         Assertions.assertEquals(updTask, actTasks.get(0), "Поля задачи не были обновлены.");
 
-        Task wrongTask = new Task("Test updated name", "Test updated description", IN_PROGRESS, 3);
+        Task wrongTask = new Task("Test updated name", "Test updated description", IN_PROGRESS, 3, 60 * 48, LocalDateTime.now());
         manager.updateTask(wrongTask);
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> actTasks.get(3));
         Assertions.assertThrows(UnsupportedOperationException.class, () -> {
@@ -52,8 +53,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void deleteAllTasks() {
-        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null);
-        Task task1 = new Task("Test addNewTask", "Test addNewTask description", NEW, null);
+        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now());
+        Task task1 = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now());
         manager.createTask(task);
         manager.createTask(task1);
         Assertions.assertNotNull(manager.getAllTasks(), "Задачи на возвращаются.");
@@ -63,7 +64,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void getTaskById() {
-        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null);
+        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now());
         manager.createTask(task);
 
         Task expTask = manager.getTaskById(task.getId());
@@ -74,7 +75,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void deleteTaskById() {
-        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null);
+        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now());
         manager.createTask(task);
         Assertions.assertEquals(task, manager.getTaskById(task.getId()));
         manager.deleteTaskById(task.getId());
@@ -83,9 +84,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void createSubTask() {
-        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null);
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
-        SubTask subTask = new SubTask("Test addNewTask", "Test addNewTask description", NEW, null, 1);
+        SubTask subTask = new SubTask("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
         manager.createSubTask(subTask);
         final SubTask savedSubTask = manager.getSubTaskById(subTask.getId());
         Assertions.assertNotNull(savedSubTask, "Задача не найдена.");
@@ -102,11 +103,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void updateSubTask() {
-        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null);
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
-        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 1);
+        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
         manager.createSubTask(subTask);
-        SubTask updSubTask = new SubTask("Test updated name", "Test updated description", IN_PROGRESS, subTask.getId(), subTask.getEpicId());
+        SubTask updSubTask = new SubTask("Test updated name", "Test updated description", IN_PROGRESS, subTask.getId(), 60 * 48, LocalDateTime.now(), subTask.getEpicId());
         manager.updateSubTask(updSubTask);
         Assertions.assertNotEquals(subTask, manager.getSubTaskById(0));
         final List<Task> actSubTasks = manager.getAllSubTasks();
@@ -114,7 +115,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertEquals(1, actSubTasks.size(), "Неверное количество задач.");
         Assertions.assertEquals(updSubTask, actSubTasks.get(0), "Поля задачи не были обновлены.");
 
-        SubTask wrongSubTask = new SubTask("Test updated name", "Test updated description", IN_PROGRESS, 10, 3);
+        SubTask wrongSubTask = new SubTask("Test updated name", "Test updated description", IN_PROGRESS, 10, 60 * 48, LocalDateTime.now(), 3);
         manager.updateSubTask(wrongSubTask);
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> actSubTasks.get(3));
         Assertions.assertThrows(UnsupportedOperationException.class, () -> {
@@ -125,10 +126,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void deleteAllSubTasks() {
-        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null);
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
-        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 1);
-        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 1);
+        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
+        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
         manager.createSubTask(subTask);
         manager.createSubTask(subTask1);
         Assertions.assertNotNull(manager.getAllSubTasks(), "Задачи на возвращаются.");
@@ -139,9 +140,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void getSubTaskById() {
-        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null);
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
-        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 1);
+        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
         manager.createSubTask(subTask);
 
         Task expTask = manager.getSubTaskById(subTask.getId());
@@ -152,9 +153,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void deleteSubTaskById() {
-        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null);
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
-        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 1);
+        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
         manager.createSubTask(subTask);
 
         Assertions.assertEquals(subTask, manager.getSubTaskById(subTask.getId()));
@@ -164,7 +165,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void createEpic() {
-        Epic epic = new Epic("Test addNewTask", "Test addNewTask description", null);
+        Epic epic = new Epic("Test addNewTask", "Test addNewTask description", null, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
         final Epic savedEpic = manager.getEpicById(epic.getId());
 
@@ -180,7 +181,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void deleteEpicById() {
-        Epic epic = new Epic("Test addNewTask", "Test addNewTask description", null);
+        Epic epic = new Epic("Test addNewTask", "Test addNewTask description", null, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
         Assertions.assertEquals(epic, manager.getEpicById(epic.getId()));
         manager.deleteEpicById(epic.getId());
@@ -192,8 +193,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void updateEpic() {
-        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null);
-        Epic updEpic = new Epic("Test addUpdatedEpic", "Test addUpdatedEpic description", 1);
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, LocalDateTime.now(), null);
+        Epic updEpic = new Epic("Test addUpdatedEpic", "Test addUpdatedEpic description", 1, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
         manager.updateEpic(updEpic);
         Assertions.assertNotEquals(epic, manager.getEpicById(0));
@@ -202,7 +203,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertEquals(1, actEpics.size(), "Неверное количество задач.");
         Assertions.assertEquals(updEpic, actEpics.get(0), "Поля задачи не были обновлены.");
 
-        Epic wrongEpic = new Epic("Test updated name", "Test updated description", 10);
+        Epic wrongEpic = new Epic("Test updated name", "Test updated description", 10, 60 * 48, LocalDateTime.now(), null);
         manager.updateEpic(wrongEpic);
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> actEpics.get(3));
         Assertions.assertThrows(UnsupportedOperationException.class, () -> {
@@ -214,8 +215,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void deleteAllEpics() {
-        Epic epic = new Epic("Test addNewTask", "Test addNewTask description", 1);
-        Epic epic1 = new Epic("Test addNewTask", "Test addNewTask description", 2);
+        Epic epic = new Epic("Test addNewTask", "Test addNewTask description", 1, 60 * 48, LocalDateTime.now(), null);
+        Epic epic1 = new Epic("Test addNewTask", "Test addNewTask description", 2, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
         manager.createEpic(epic1);
         Assertions.assertNotNull(manager.getAllEpics(), "Задачи на возвращаются.");
@@ -227,7 +228,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void getEpicById() {
-        Epic epic = new Epic("Test addNewTask", "Test addNewTask description", 1);
+        Epic epic = new Epic("Test addNewTask", "Test addNewTask description", 1, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
 
         Epic expEpic = manager.getEpicById(epic.getId());

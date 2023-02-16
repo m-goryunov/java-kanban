@@ -5,6 +5,7 @@ import ru.yandex.util.Managers;
 import ru.yandex.model.*;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Scanner;
 
 public class Main {
@@ -44,41 +45,42 @@ public class Main {
                 case 4 -> {
                     System.out.println("Введите тип задачи: \n \n 1. Task \n 2. SubTask \n 3. Epic");
                     switch (scanner.nextInt()) {
-                        case 1 -> {
+                        case 1 ->
                             taskManager.createTask(new Task("Тасочка1", "Доработать АС",
-                                    TaskStatus.NEW, null, (60 * 2), LocalDateTime.now()));
-                        }
+                                    TaskStatus.NEW, null, (60 * 2), LocalDateTime.of(2023, Month.JANUARY,10,12,0)));
                         case 2 -> {
                             System.out.println("К какому Эпику относится подзадача?");
                             Integer setEpic = scanner.nextInt();
                             taskManager.createSubTask(new SubTask("Сабтаска1", "Техдолг Q1",
-                                    TaskStatus.NEW, null, (60 * 3), LocalDateTime.now(), setEpic));
+                                    TaskStatus.NEW, null, (60 * 3), LocalDateTime.now().minusMonths(1), setEpic));
                         }
-                        case 3 -> taskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null, (60 * 4), LocalDateTime.now()));
+                        case 3 -> taskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null, (60 * 4), LocalDateTime.now().minusMonths(2), null));
                     }
                 }
                 case 5 -> {
                     System.out.println("Введите ID задачи");
                     int ID = scanner.nextInt();
                     System.out.println("Какую задачу обновить? \n 1. Task \n 2. SubTask \n 3. Epic");
-                    System.out.println("К какому эпику присвоить?");
-                    Integer newEpicID = scanner.nextInt();
                     switch (scanner.nextInt()) {
                         case 1 -> taskManager.updateTask(new Task("Новое название"
                                 , "Новое описание"
                                 , TaskStatus.IN_PROGRESS, ID,
-                                (60 * 2),
+                                (24 * 3),
                                 LocalDateTime.now()));
-                        case 2 -> taskManager.updateSubTask(new SubTask("Новое название"
-                                , "Новое описание"
-                                , TaskStatus.IN_PROGRESS
-                                , ID
-                                , (60 * 3)
-                                , LocalDateTime.now()
-                                , newEpicID));
+                        case 2 -> {
+                            System.out.println("К какому эпику присвоить?");
+                            Integer newEpicID = scanner.nextInt();
+                            taskManager.updateSubTask(new SubTask("Новое название"
+                                    , "Новое описание"
+                                    , TaskStatus.IN_PROGRESS
+                                    , ID
+                                    , (24 * 10)
+                                    , LocalDateTime.now()
+                                    , newEpicID));
+                        }
                         case 3 -> taskManager.updateEpic(new Epic("Новое название"
                                 , "Новое описание"
-                                , ID,(60*4), LocalDateTime.now()));
+                                , ID,(24*4), LocalDateTime.now(), null));
                     }
                 }
                 case 6 -> {
@@ -97,6 +99,7 @@ public class Main {
                     System.out.println(taskManager.getAllSubtasksByEpic(epicSubtasksIds).toString());
                 }
                 case 8 -> System.out.println(taskManager.getHistory().toString());
+                case 9 -> System.out.println(taskManager.getPrioritizedTasks());
                 case 0 -> System.exit(0);
                 default -> System.out.println("Такой команды нет");
             }
@@ -114,6 +117,7 @@ public class Main {
                  6. Удалить задачу по идентификатору
                  7. Получить Подзадачи по Эпику
                  8. Посмотреть историю просмотров
+                 9. Посмотреть приоритизированные задачи
                  0. Выход из программы
                 """);
     }

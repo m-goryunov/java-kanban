@@ -1,6 +1,7 @@
 package ru.yandex.model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Task {
     private String name;
@@ -72,13 +73,22 @@ public class Task {
 
     public void setDuration(long duration) {this.duration = duration;}
 
-    public LocalDateTime getStartTime() {return startTime;}
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
 
     public void setStartTime(LocalDateTime startTime) {this.startTime = startTime;}
 
     public LocalDateTime getEndTime(){
         return getStartTime().plusMinutes(getDuration());
     }
+
+    public String dateFormatter(LocalDateTime dateTime){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy || HH:mm");
+        return formatter.format(dateTime);
+    }
+
+
 }
 
 

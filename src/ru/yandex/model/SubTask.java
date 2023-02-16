@@ -28,8 +28,9 @@ public class SubTask extends Task {
                 ", status=" + getStatus() +
                 ", ID=" + getId() +
                 ", epicId='" + getEpicId() + '\'' +
-                ", duration='" + getDuration() + '\'' +
-                ", startTime='" + getStartTime() + '\'' +
+                ", duration=" + getDuration() + " min." +
+                ", startTime=" + dateFormatter(getStartTime()) +
+                ", endTime=" + dateFormatter(getEndTime()) +
                 '}';
     }
 

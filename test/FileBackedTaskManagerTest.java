@@ -10,6 +10,7 @@ import ru.yandex.taskmanager.impl.FileBackedTaskManager;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,13 +24,15 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     }
 
     @BeforeEach
-    void setUp() {manager = new FileBackedTaskManager(getActualFile());}
+    void setUp() {
+        manager = new FileBackedTaskManager(getActualFile());
+    }
 
     @Test
     void fileBackedTaskManagerSaveToFileIsEmptyTest() throws IOException {
-        manager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null));
-        manager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 1));
-        manager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null));
+        manager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null, 60 * 48, LocalDateTime.now(), null));
+        manager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now(), null));
+        manager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now()));
         manager.deleteAllTasks();
         manager.deleteAllEpics();
 
@@ -49,7 +52,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
 
     @Test
     void fileBackedTaskManagerSaveToFileEpicWithNoSubTasksTest() throws IOException { // Надеюсь правильно понял граничное условие - b. Эпик без подзадач.
-        manager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null));
+        manager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null, 60 * 48, LocalDateTime.now(), null));
 
         try (BufferedReader buffer = new BufferedReader(new FileReader(getActualFile(), StandardCharsets.UTF_8))) {
             while (buffer.ready()) {
@@ -69,9 +72,9 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
 
     @Test
     void fileBackedTaskManagerSaveToFileIsEmptyHistoryTest() throws IOException {
-        manager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null));
-        manager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 1));
-        manager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null));
+        manager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null, 60 * 48, LocalDateTime.now(), null));
+        manager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now(), 1));
+        manager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now()));
 
         try (BufferedReader buffer = new BufferedReader(new FileReader(getActualFile(), StandardCharsets.UTF_8))) {
             while (buffer.ready()) {
@@ -93,10 +96,10 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         List<Task> expHistory = new ArrayList<>();
 
 
-        Epic epic = new Epic("Эпик1", "Темная тема в Пачке", null);
-        SubTask subTask = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 1);
-        Task task = new Task("Таск1", "Доработать АС", TaskStatus.NEW, null);
-        SubTask subTask1 = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 1);
+        Epic epic = new Epic("Эпик1", "Темная тема в Пачке", null, 60 * 48, LocalDateTime.now(), null);
+        SubTask subTask = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now(), 1);
+        Task task = new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now());
+        SubTask subTask1 = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now(), 1);
 
         manager.createEpic(epic);
         manager.getEpicById(epic.getId());

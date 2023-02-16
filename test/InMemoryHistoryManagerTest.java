@@ -8,6 +8,7 @@ import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.taskmanager.impl.InMemoryHistoryManager;
 import ru.yandex.util.Managers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class InMemoryHistoryManagerTest extends InMemoryHistoryManager {
@@ -16,10 +17,10 @@ public class InMemoryHistoryManagerTest extends InMemoryHistoryManager {
     void historyManagerTest() {
         TaskManager taskManager = Managers.getDefault();
 
-        Epic epic = new Epic("Эпик1", "Темная тема в Пачке", null);
-        SubTask subTask = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 1);
-        Task task = new Task("Таск1", "Доработать АС", TaskStatus.NEW, null);
-        SubTask subTask1 = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 1);
+        Epic epic = new Epic("Эпик1", "Темная тема в Пачке", null, 60*48, LocalDateTime.now(), null);
+        SubTask subTask = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60*48, LocalDateTime.now(), 1);
+        Task task = new Task("Таск1", "Доработать АС", TaskStatus.NEW, null,60*48, LocalDateTime.now());
+        SubTask subTask1 = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null,60*48, LocalDateTime.now(), 1);
 
         taskManager.createEpic(epic);
         taskManager.createTask(task);
