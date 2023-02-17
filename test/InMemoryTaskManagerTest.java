@@ -9,6 +9,7 @@ import ru.yandex.taskmanager.impl.InMemoryTaskManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 import static ru.yandex.model.TaskStatus.*;
 
@@ -118,6 +119,92 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         manager.deleteAllSubTasks();
         manager.updateEpicStatus(epic.getId());
         Assertions.assertEquals(NEW, epic.getStatus());
+    }
+
+    @Test
+    void dateTimeCalculationIsCorrect() {
+        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null
+                , 60 * 48, LocalDateTime.of(2022, 6, 6, 10, 0));
+
+        manager.createTask(task);
+        Assertions.assertNotNull(manager.getTaskById(task.getId()));
+        Assertions.assertEquals(task, manager.getTaskById(task.getId()));
+
+        LocalDateTime expectedEndTime = LocalDateTime.of(2022, 6, 6, 10, 0).plusMinutes(60 * 48);
+        Assertions.assertEquals(expectedEndTime, manager.getTaskById(task.getId()).getEndTime());
+    }
+
+    @Test
+    void dateTimeEpicCalculationIsCorrect() {
+
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, null, null);
+        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null
+                , 60 * 48, LocalDateTime.of(2022, 6, 6, 11, 0), 1);
+        SubTask subTask2 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null
+                , 60 * 24, LocalDateTime.of(2022, 7, 6, 12, 0), 1);
+        SubTask subTask3 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null
+                , 60 * 12, LocalDateTime.of(2022, 5, 6, 13, 0), 1);
+
+        manager.createEpic(epic);
+        manager.createSubTask(subTask1);
+        manager.createSubTask(subTask2);
+        manager.createSubTask(subTask3);
+
+        Assertions.assertNotNull(manager.getEpicById(epic.getId()));
+        Assertions.assertEquals(epic, manager.getEpicById(epic.getId()));
+        Assertions.assertNotNull(manager.getSubTaskById(subTask1.getId()));
+        Assertions.assertEquals(subTask1, manager.getSubTaskById(subTask1.getId()));
+        Assertions.assertNotNull(manager.getSubTaskById(subTask2.getId()));
+        Assertions.assertEquals(subTask2, manager.getSubTaskById(subTask2.getId()));
+        Assertions.assertNotNull(manager.getSubTaskById(subTask3.getId()));
+        Assertions.assertEquals(subTask3, manager.getSubTaskById(subTask3.getId()));
+
+        LocalDateTime expectedEpicStartTime = LocalDateTime.of(2022, 5, 6, 13, 0);
+        manager.setEpicCalendarization(manager.getEpicById(epic.getId()).getId());
+        Assertions.assertEquals(expectedEpicStartTime, manager.getEpicById(epic.getId()).getStartTime());
+
+        long expectedEpicDuration = (60 * 48) + (60 * 24) + (60 * 12);
+        Assertions.assertEquals(expectedEpicDuration, manager.getEpicById(epic.getId()).getDuration());
+
+        LocalDateTime expectedEndTime = expectedEpicStartTime.plusMinutes(expectedEpicDuration);
+        Assertions.assertEquals(expectedEndTime, manager.getEpicById(epic.getId()).getEndTime());
+
+    }
+
+    @Test
+    void taskPriorityIsCorrect() {
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, null, null);
+        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null
+                , 60 * 48, LocalDateTime.of(2022, 6, 6, 11, 0), 1);
+        SubTask subTask2 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null
+                , 60 * 24, LocalDateTime.of(2022, 7, 6, 12, 0), 1);
+        SubTask subTask3 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null
+                , 60 * 12, LocalDateTime.of(2022, 5, 6, 13, 0), 1);
+        SubTask sameDateSubTask4 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null
+                , 60 * 12, LocalDateTime.of(2022, 5, 6, 13, 0), 1);
+        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null
+                , 60 * 48, LocalDateTime.of(2022, 8, 6, 10, 0));
+
+        manager.createEpic(epic);
+        manager.createSubTask(subTask1);
+        manager.createSubTask(subTask2);
+        manager.createSubTask(subTask3);
+        manager.createSubTask(sameDateSubTask4);
+        manager.createTask(task);
+
+        Assertions.assertEquals(4,manager.getPrioritizedTasks().size());
+
+        List<Task> expectedSet = new ArrayList<>();
+
+        expectedSet.add(task);
+        expectedSet.add(subTask2);
+        expectedSet.add(subTask1);
+        expectedSet.add(subTask3);
+
+
+        Assertions.assertEquals(expectedSet.toString(),manager.getPrioritizedTasks().toString());
+
+
     }
 }
 

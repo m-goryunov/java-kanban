@@ -154,9 +154,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         Epic epic = new Epic(task.getName(), task.getDescription(), task.getId(),task.getDuration(), task.getStartTime(), task.getEndTime());
                         manager.epics.put(task.getId(), epic);
                     }
-                    System.out.println(manager.tasks);
+/*                    System.out.println(manager.tasks);
                     System.out.println(manager.subTasks);
-                    System.out.println(manager.epics);
+                    System.out.println(manager.epics);*/
                 }
             }
         } catch (IOException e) {

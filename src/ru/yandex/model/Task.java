@@ -30,6 +30,7 @@ public class Task {
                 ", id=" + id +
                 ", duration=" + duration +
                 ", startTime=" + startTime +
+                ", endTime=" + dateFormatter(getEndTime()) +
                 '}';
     }
 
