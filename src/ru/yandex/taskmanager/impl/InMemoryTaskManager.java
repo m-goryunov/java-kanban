@@ -1,5 +1,6 @@
 package ru.yandex.taskmanager.impl;
 
+import ru.yandex.exception.CollisionTaskException;
 import ru.yandex.taskmanager.HistoryManager;
 import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.util.*;
@@ -143,17 +144,17 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setDuration(durationCount);
 
         Comparator<SubTask> comparator = (o1, o2) -> {
-
             if (o1.getStartTime().isBefore(o2.getStartTime())) {
-                return 1;
-            } else if (o2.getStartTime().isBefore(o1.getStartTime())) {
                 return -1;
+            } else if (o2.getStartTime().isBefore(o1.getStartTime())) {
+                return 1;
             } else {
                 return 0;
             }
         };
 
         TreeSet<SubTask> set = new TreeSet<>(comparator);
+
         for (Integer subTaskId : ids.keySet()) {
             if (subTasks.get(subTaskId).getStartTime() != null) {
                 set.add(subTasks.get(subTaskId));
@@ -162,6 +163,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         epic.setStartTime(set.first().getStartTime());
         epic.setEndTime(set.last().getEndTime());
+
     }
 
     @Override
@@ -199,8 +201,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteSubTaskById(int id) {
         if (subTasks.containsKey(id)) {
             SubTask subTask = subTasks.remove(id);
-            epics.get(subTask.getEpicId()).removeRelatedSubtaskIds(subTask.getId());
             setEpicCalendarization(subTask.getEpicId());
+            epics.get(subTask.getEpicId()).removeRelatedSubtaskIds(subTask.getId());
             updateEpicStatus(subTask.getEpicId());
             historyManager.remove(id);
         }
@@ -296,13 +298,13 @@ public class InMemoryTaskManager implements TaskManager {
             if (task.getStartTime() == null || t.getStartTime() == null) {
                 return;
             }
-            if (!task.getEndTime().isAfter(t.getStartTime()) || !task.getEndTime().equals(t.getStartTime())) {
+            if (!task.getEndTime().isAfter(t.getStartTime())) {
                 continue;
             }
-            if (!task.getStartTime().isAfter(t.getEndTime()) || !task.getStartTime().equals(t.getEndTime())) {
+            if (!task.getStartTime().isBefore(t.getEndTime())) {
                 continue;
             }
-            throw new IllegalStateException("Можно выполнять не более 1 задачи в заданном интервале времени!");
+            throw new CollisionTaskException("Можно выполнять не более 1 задачи в заданном интервале времени!");
         }
     }
 }

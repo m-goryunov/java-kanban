@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.exception.CollisionTaskException;
 import ru.yandex.model.Epic;
 import ru.yandex.model.SubTask;
 import ru.yandex.model.Task;
@@ -24,8 +25,8 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
 
     @Test
     void getAllTasks() {
-        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now());
-        Task task1 = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now());
+        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now().minusMonths(5));
+        Task task1 = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now().plusDays(11));
         List<Task> expTasks = new ArrayList<>();
         expTasks.add(task);
         expTasks.add(task1);
@@ -42,8 +43,8 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
     void getAllSubTasks() {
         Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
-        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
-        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
+        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now().plusDays(22), 1);
+        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now().plusDays(51), 1);
         List<Task> expTasks = new ArrayList<>();
         expTasks.add(subTask);
         expTasks.add(subTask1);
@@ -78,7 +79,7 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
         SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
-        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
+        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now().plusDays(23), 1);
         manager.createSubTask(subTask);
         manager.createSubTask(subTask1);
 
@@ -95,9 +96,9 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
     @Test
     void updateEpicStatus() {
         Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, LocalDateTime.now(), null);
-        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
-        SubTask subTask2 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
-        SubTask subTask3 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
+        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now().plusDays(4), 1);
+        SubTask subTask2 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now().plusDays(15), 1);
+        SubTask subTask3 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now().plusDays(10), 1);
         manager.createEpic(epic);
         manager.createSubTask(subTask1);
         manager.createSubTask(subTask2);
@@ -139,11 +140,11 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
 
         Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, null, null);
         SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null
-                , 60 * 48, LocalDateTime.of(2022, 6, 6, 11, 0), 1);
+                , 60 * 48, LocalDateTime.of(2022, 10, 6, 5, 0), 1);
         SubTask subTask2 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null
-                , 60 * 24, LocalDateTime.of(2022, 7, 6, 12, 0), 1);
+                , 60 * 24, LocalDateTime.of(2022, 4, 6, 18, 0), 1);
         SubTask subTask3 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null
-                , 60 * 12, LocalDateTime.of(2022, 5, 6, 13, 0), 1);
+                , 60 * 12, LocalDateTime.of(2022, 2, 6, 22, 0), 1);
 
         manager.createEpic(epic);
         manager.createSubTask(subTask1);
@@ -159,14 +160,14 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         Assertions.assertNotNull(manager.getSubTaskById(subTask3.getId()));
         Assertions.assertEquals(subTask3, manager.getSubTaskById(subTask3.getId()));
 
-        LocalDateTime expectedEpicStartTime = LocalDateTime.of(2022, 5, 6, 13, 0);
+        LocalDateTime expectedEpicStartTime = LocalDateTime.of(2022, 2, 6, 22, 0);
         manager.setEpicCalendarization(manager.getEpicById(epic.getId()).getId());
         Assertions.assertEquals(expectedEpicStartTime, manager.getEpicById(epic.getId()).getStartTime());
 
         long expectedEpicDuration = (60 * 48) + (60 * 24) + (60 * 12);
         Assertions.assertEquals(expectedEpicDuration, manager.getEpicById(epic.getId()).getDuration());
 
-        LocalDateTime expectedEndTime = expectedEpicStartTime.plusMinutes(expectedEpicDuration);
+        LocalDateTime expectedEndTime = epic.getEndTime();
         Assertions.assertEquals(expectedEndTime, manager.getEpicById(epic.getId()).getEndTime());
 
     }
@@ -184,16 +185,22 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
                 , 60 * 12, LocalDateTime.of(2022, 5, 6, 13, 0), 2);
         Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null
                 , 60 * 48, null);
+        Task task1 = new Task("Test Validate", "Test Validate", NEW, null
+                , 60 * 12, LocalDateTime.of(2022, 5, 6, 13, 0));
+        Task task2 = new Task("Test Validate", "Test Validate", NEW, null
+                , 60 * 12, LocalDateTime.of(2022, 5, 6, 13, 0));
 
         manager.createTask(task);
         manager.createEpic(epic);
         manager.createSubTask(subTask1);
         manager.createSubTask(subTask2);
         manager.createSubTask(subTask3);
-        manager.createSubTask(sameDateSubTask4);
+        Assertions.assertThrows(CollisionTaskException.class,
+                () -> manager.createSubTask(sameDateSubTask4),
+                "Можно выполнять не более 1 задачи в заданном интервале времени!");
 
 
-        Assertions.assertEquals(4,manager.getPrioritizedTasks().size());
+        Assertions.assertEquals(4, manager.getPrioritizedTasks().size());
 
         List<Task> expectedSet = new ArrayList<>();
 
@@ -206,9 +213,13 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         task.setId(1);
         expectedSet.add(task);
 
-        Assertions.assertEquals(expectedSet.toString(),manager.getPrioritizedTasks().toString());
+        Assertions.assertEquals(expectedSet.toString(), manager.getPrioritizedTasks().toString());
 
 
+        Assertions.assertThrows(CollisionTaskException.class,
+                () -> manager.createTask(task1),
+                "Можно выполнять не более 1 задачи в заданном интервале времени!");
     }
+
 }
 

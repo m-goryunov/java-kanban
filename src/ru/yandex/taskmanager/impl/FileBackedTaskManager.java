@@ -3,7 +3,6 @@ package ru.yandex.taskmanager.impl;
 import ru.yandex.exception.ManagerSaveException;
 import ru.yandex.model.*;
 import ru.yandex.taskmanager.HistoryManager;
-import ru.yandex.taskmanager.TaskManager;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -16,7 +15,7 @@ import java.util.Optional;
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final File file;
-    private static final String title = "NAME, DESCRIPTION, STATUS, ID, TYPE, DURATION, START_TIME, EPIC_ID";
+    private static final String title = "NAME, DESCRIPTION, STATUS, ID, TYPE, DURATION, START_TIME, END_TIME, EPIC_ID";
 
 
     public FileBackedTaskManager(File file) {
@@ -52,12 +51,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private String toString(Task task) {
         return task.getName() + ", " + task.getDescription() + ", " + task.getStatus()
-                + ", " + task.getId() + ", " + task.getType() + ", " + task.getDuration() + ", " + task.getStartTime();
+                + ", " + task.getId() + ", " + task.getType() + ", " + task.getDuration() + ", " + task.getStartTime()
+                + ", " + task.getEndTime();
     }
 
 
     private static Task fromString(String value) {
         String[] lineContent = value.split(", ");
+        if (lineContent[6] == null) {
+            lineContent[6] = String.valueOf(LocalDateTime.of(2000, 1, 1, 1, 0, 0, 0));
+        }
         if (lineContent[4].equals(TaskType.TASK.toString())) {
             return new Task(
                     lineContent[0],
@@ -65,7 +68,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Enum.valueOf(TaskStatus.class, lineContent[2]),
                     Integer.parseInt(lineContent[3]),
                     Long.parseLong(lineContent[5]),
-                    LocalDateTime.parse(Optional.of(lineContent[6]).toString())
+                    LocalDateTime.parse((lineContent[6]))
             );
         } else if (lineContent[4].equals(TaskType.SUBTASK.toString())) {
             return new SubTask(
@@ -74,8 +77,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Enum.valueOf(TaskStatus.class, lineContent[2]),
                     Integer.parseInt(lineContent[3]),
                     Long.parseLong(lineContent[5]),
-                    LocalDateTime.parse(Optional.of(lineContent[6]).toString()),
-                    Integer.parseInt(lineContent[7])
+                    LocalDateTime.parse((lineContent[6])),
+                    Integer.parseInt(lineContent[8])
             );
         } else {
             Epic epic = new Epic(
@@ -83,12 +86,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     lineContent[1],
                     Integer.parseInt(lineContent[3]),
                     Integer.parseInt(lineContent[5]),
-                    LocalDateTime.parse(Optional.of(lineContent[6]).toString()),
-                    null
-
+                    LocalDateTime.parse((lineContent[6])),
+                    LocalDateTime.parse((lineContent[7]))
             );
             epic.setStatus(Enum.valueOf(TaskStatus.class, lineContent[2]));
-            //epic.setEndTime();
             return epic;
         }
     }

@@ -54,7 +54,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void deleteAllTasks() {
         Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now());
-        Task task1 = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now());
+        Task task1 = new Task("Test addNewTask", "Test addNewTask description", NEW, null, 60 * 48, LocalDateTime.now().plusDays(4));
         manager.createTask(task);
         manager.createTask(task1);
         Assertions.assertNotNull(manager.getAllTasks(), "Задачи на возвращаются.");
@@ -129,7 +129,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
         SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
-        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
+        SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now().plusDays(4), 1);
         manager.createSubTask(subTask);
         manager.createSubTask(subTask1);
         Assertions.assertNotNull(manager.getAllSubTasks(), "Задачи на возвращаются.");
@@ -155,7 +155,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void deleteSubTaskById() {
         Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, LocalDateTime.now(), null);
         manager.createEpic(epic);
-        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now(), 1);
+        SubTask subTask = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null, 60 * 48, LocalDateTime.now().plusDays(8), 1);
         manager.createSubTask(subTask);
 
         Assertions.assertEquals(subTask, manager.getSubTaskById(subTask.getId()));

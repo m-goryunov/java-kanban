@@ -74,7 +74,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     void fileBackedTaskManagerSaveToFileIsEmptyHistoryTest() throws IOException {
         manager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null, 60 * 48, LocalDateTime.now(), null));
         manager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now(), 1));
-        manager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now()));
+        manager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now().plusDays(4)));
 
         try (BufferedReader buffer = new BufferedReader(new FileReader(getActualFile(), StandardCharsets.UTF_8))) {
             while (buffer.ready()) {
@@ -94,12 +94,13 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         List<SubTask> expSubTasks = new ArrayList<>();
         List<Epic> expEpics = new ArrayList<>();
         List<Task> expHistory = new ArrayList<>();
+        List<Task> expPriority = new ArrayList<>();
 
 
         Epic epic = new Epic("Эпик1", "Темная тема в Пачке", null, 60 * 48, LocalDateTime.now(), null);
         SubTask subTask = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now(), 1);
-        Task task = new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now());
-        SubTask subTask1 = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now(), 1);
+        Task task = new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now().plusDays(5));
+        SubTask subTask1 = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now().minusMonths(1), 1);
 
         manager.createEpic(epic);
         manager.getEpicById(epic.getId());
@@ -114,6 +115,10 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         expTasks.add(task);
         expHistory.add(epic);
         expHistory.add(subTask);
+        expPriority.add(task);
+        expPriority.add(subTask);
+        expPriority.add(subTask1);
+
 
         loadFromFile(getActualFile());
 
@@ -121,6 +126,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         List<Task> actSubtasks = manager.getAllSubTasks();
         List<Epic> actEpics = manager.getAllEpics();
         List<Task> actHistory = manager.getHistory();
+        List<Task> actPriority = manager.getPrioritizedTasks();
 
         Assertions.assertNotNull(actTasks);
         Assertions.assertNotNull(actSubtasks);
@@ -131,5 +137,6 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         Assertions.assertEquals(expSubTasks, actSubtasks, "Ошибка при загрузке Сабтасок.");
         Assertions.assertEquals(expEpics, actEpics, "Ошибка при загрузке Эпиков.");
         Assertions.assertEquals(expHistory, actHistory, "Ошибка при загрузке Истории.");
+        Assertions.assertEquals(expPriority, actPriority, "Ошибка при загрузке отсортированных задач.");
     }
 }
