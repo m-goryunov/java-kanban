@@ -175,32 +175,36 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
     void taskPriorityIsCorrect() {
         Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, null, null);
         SubTask subTask1 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null
-                , 60 * 48, LocalDateTime.of(2022, 6, 6, 11, 0), 1);
+                , 60 * 48, LocalDateTime.of(2022, 6, 6, 11, 0), 2);
         SubTask subTask2 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null
-                , 60 * 24, LocalDateTime.of(2022, 7, 6, 12, 0), 1);
+                , 60 * 24, LocalDateTime.of(2022, 7, 6, 12, 0), 2);
         SubTask subTask3 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null
-                , 60 * 12, LocalDateTime.of(2022, 5, 6, 13, 0), 1);
-        SubTask sameDateSubTask4 = new SubTask("Test addNewSubTask", "Test addNewSubTask description", NEW, null
-                , 60 * 12, LocalDateTime.of(2022, 5, 6, 13, 0), 1);
+                , 60 * 12, LocalDateTime.of(2022, 5, 6, 13, 0), 2);
+        SubTask sameDateSubTask4 = new SubTask("Same", "Same", NEW, null
+                , 60 * 12, LocalDateTime.of(2022, 5, 6, 13, 0), 2);
         Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null
-                , 60 * 48, LocalDateTime.of(2022, 8, 6, 10, 0));
+                , 60 * 48, null);
 
+        manager.createTask(task);
         manager.createEpic(epic);
         manager.createSubTask(subTask1);
         manager.createSubTask(subTask2);
         manager.createSubTask(subTask3);
         manager.createSubTask(sameDateSubTask4);
-        manager.createTask(task);
+
 
         Assertions.assertEquals(4,manager.getPrioritizedTasks().size());
 
         List<Task> expectedSet = new ArrayList<>();
 
-        expectedSet.add(task);
+        subTask2.setId(4);
         expectedSet.add(subTask2);
+        subTask1.setId(3);
         expectedSet.add(subTask1);
+        subTask3.setId(5);
         expectedSet.add(subTask3);
-
+        task.setId(1);
+        expectedSet.add(task);
 
         Assertions.assertEquals(expectedSet.toString(),manager.getPrioritizedTasks().toString());
 

@@ -2,6 +2,7 @@ package ru.yandex.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 public class Task {
     private String name;
@@ -10,6 +11,7 @@ public class Task {
     private Integer id;
     private long duration;
     private LocalDateTime startTime;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy || HH:mm");
 
 
     public Task(String name, String description, TaskStatus status, Integer id, long duration, LocalDateTime startTime) {
@@ -70,23 +72,36 @@ public class Task {
         return TaskType.TASK;
     }
 
-    public long getDuration() {return duration;}
+    public long getDuration() {
+        return duration;
+    }
 
-    public void setDuration(long duration) {this.duration = duration;}
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
 
     public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDateTime startTime) {this.startTime = startTime;}
 
-    public LocalDateTime getEndTime(){
-        return getStartTime().plusMinutes(getDuration());
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
-    public String dateFormatter(LocalDateTime dateTime){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy || HH:mm");
-        return formatter.format(dateTime);
+    public LocalDateTime getEndTime() {
+        if (getStartTime() == null) {
+            return null;
+        } else {
+            return getStartTime().plusMinutes(getDuration());
+        }
+    }
+
+    public String dateFormatter(LocalDateTime dateTime) {
+        if (startTime == null) {
+            return null;
+        }
+        return FORMATTER.format(dateTime);
     }
 
 

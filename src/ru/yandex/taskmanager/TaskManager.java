@@ -3,7 +3,6 @@ package ru.yandex.taskmanager;
 import ru.yandex.model.*;
 
 import java.util.List;
-import java.util.TreeSet;
 
 public interface TaskManager {
     void createTask(Task task);
@@ -48,5 +47,5 @@ public interface TaskManager {
 
     void updateEpicStatus(Integer id);
 
-    TreeSet<Task> getPrioritizedTasks();
+    List<Task> getPrioritizedTasks();
 }

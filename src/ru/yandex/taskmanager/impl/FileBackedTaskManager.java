@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -64,7 +65,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Enum.valueOf(TaskStatus.class, lineContent[2]),
                     Integer.parseInt(lineContent[3]),
                     Long.parseLong(lineContent[5]),
-                    LocalDateTime.parse(lineContent[6])
+                    LocalDateTime.parse(Optional.of(lineContent[6]).toString())
             );
         } else if (lineContent[4].equals(TaskType.SUBTASK.toString())) {
             return new SubTask(
@@ -73,7 +74,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Enum.valueOf(TaskStatus.class, lineContent[2]),
                     Integer.parseInt(lineContent[3]),
                     Long.parseLong(lineContent[5]),
-                    LocalDateTime.parse(lineContent[6]),
+                    LocalDateTime.parse(Optional.of(lineContent[6]).toString()),
                     Integer.parseInt(lineContent[7])
             );
         } else {
@@ -82,11 +83,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     lineContent[1],
                     Integer.parseInt(lineContent[3]),
                     Integer.parseInt(lineContent[5]),
-                    LocalDateTime.parse(lineContent[6]),
+                    LocalDateTime.parse(Optional.of(lineContent[6]).toString()),
                     null
 
             );
             epic.setStatus(Enum.valueOf(TaskStatus.class, lineContent[2]));
+            //epic.setEndTime();
             return epic;
         }
     }
@@ -151,7 +153,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         manager.subTasks.put(task.getId(), subTask);
                         manager.epics.get(subTask.getEpicId()).addRelatedSubtaskIds(subTask.getId());
                     } else if (task.getType() == TaskType.EPIC) {
-                        Epic epic = new Epic(task.getName(), task.getDescription(), task.getId(),task.getDuration(), task.getStartTime(), task.getEndTime());
+                        Epic epic = new Epic(task.getName(), task.getDescription(), task.getId(), task.getDuration(), task.getStartTime(), task.getEndTime());
                         manager.epics.put(task.getId(), epic);
                     }
 /*                    System.out.println(manager.tasks);
@@ -269,12 +271,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         File file = new File(String.valueOf(path));
         //Тест для проверки записи в файл>>>>
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
-        manager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null,60*48,LocalDateTime.now().plusDays(5), null));
+        manager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null, 60 * 48, LocalDateTime.now().plusDays(5), null));
         manager.getEpicById(1);
-        manager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60*24,LocalDateTime.now().plusDays(3),1));
-        manager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, 60*12,LocalDateTime.now().plusDays(2)));
+        manager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 24, LocalDateTime.now().plusDays(3), 1));
+        manager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, 60 * 12, LocalDateTime.now().plusDays(2)));
         manager.getSubTaskById(2);
-        manager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60*56,LocalDateTime.now().plusDays(4), 1));
+        manager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 56, LocalDateTime.now().plusDays(4), 1));
         // Тест для проверки записи из файла>>>>
         loadFromFile(file);
     }

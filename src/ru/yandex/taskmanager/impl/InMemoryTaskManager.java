@@ -5,7 +5,6 @@ import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.util.*;
 import ru.yandex.model.*;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -13,9 +12,8 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Integer, Task> tasks = new HashMap<>();
     protected final Map<Integer, SubTask> subTasks = new HashMap<>();
     protected final Map<Integer, Epic> epics = new HashMap<>();
-
-    protected HistoryManager historyManager = Managers.getDefaultHistory();
-
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
+    private final Set<Task> prioritized = new TreeSet<>(new PriorityComparator());
 
     private Integer getId() {
         return ++id;
@@ -28,18 +26,18 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createTask(Task task) {
-        if (checkDateCollision(task)) {
-            int setId = getId();
-            task.setId(setId);
-            tasks.put(setId, task);
-        }
+        int setId = getId();
+        task.setId(setId);
+        tasks.put(setId, task);
+        checkDateCollision(task);
     }
 
 
     @Override
     public void updateTask(Task task) {
-        if (tasks.containsKey(task.getId()) && checkDateCollision(task)) {
+        if (tasks.containsKey(task.getId())) {
             tasks.put(task.getId(), task);
+            checkDateCollision(task);
         }
     }
 
@@ -83,14 +81,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void createSubTask(SubTask subTask) {
         if (epics.containsKey(subTask.getEpicId())) {
-            if (checkDateCollision(subTask)) {
-                int setId = getId();
-                subTask.setId(setId);
-                epics.get(subTask.getEpicId()).addRelatedSubtaskIds(subTask.getId());
-                subTasks.put(setId, subTask);
-                updateEpicStatus(subTask.getEpicId());
-                setEpicCalendarization(subTask.getEpicId());
-            }
+            int setId = getId();
+            subTask.setId(setId);
+            epics.get(subTask.getEpicId()).addRelatedSubtaskIds(subTask.getId());
+            subTasks.put(setId, subTask);
+            updateEpicStatus(subTask.getEpicId());
+            setEpicCalendarization(subTask.getEpicId());
+            checkDateCollision(subTask);
         } else {
             System.out.println("Для сабтаски не создан Эпик!");
 
@@ -99,10 +96,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubTask(SubTask subTask) {
-        if (subTasks.containsKey(subTask.getId()) && checkDateCollision(subTask)) {
+        if (subTasks.containsKey(subTask.getId())) {
             subTasks.put(subTask.getId(), subTask);
             updateEpicStatus(subTask.getEpicId());
             setEpicCalendarization(subTask.getEpicId());
+            checkDateCollision(subTask);
         }
     }
 
@@ -138,18 +136,32 @@ public class InMemoryTaskManager implements TaskManager {
     public void setEpicCalendarization(Integer id) {
         Epic epic = epics.get(id);
         long durationCount = 0;
-        LocalDateTime tempDate;
         Map<Integer, Integer> ids = epic.getRelatedSubtaskIds();
         for (Integer subTaskId : ids.keySet()) {
             durationCount += subTasks.get(subTaskId).getDuration();
-            epic.setStartTime(LocalDateTime.of(1990,1,1,0,0,0,0));
-            tempDate = subTasks.get(subTaskId).getStartTime();
-            if (tempDate.isAfter(epic.getStartTime())) {
-                epic.setStartTime(tempDate);
-            }
         }
         epic.setDuration(durationCount);
-        epic.setEndTime(epic.getEndTime());
+
+        Comparator<SubTask> comparator = (o1, o2) -> {
+
+            if (o1.getStartTime().isBefore(o2.getStartTime())) {
+                return 1;
+            } else if (o2.getStartTime().isBefore(o1.getStartTime())) {
+                return -1;
+            } else {
+                return 0;
+            }
+        };
+
+        TreeSet<SubTask> set = new TreeSet<>(comparator);
+        for (Integer subTaskId : ids.keySet()) {
+            if (subTasks.get(subTaskId).getStartTime() != null) {
+                set.add(subTasks.get(subTaskId));
+            }
+        }
+
+        epic.setStartTime(set.first().getStartTime());
+        epic.setEndTime(set.last().getEndTime());
     }
 
     @Override
@@ -268,39 +280,29 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public TreeSet<Task> getPrioritizedTasks() {
+    public List<Task> getPrioritizedTasks() {
 
-        Comparator<Task> comparator = (o1, o2) -> {
-
-            if (o1.getStartTime() == null) {
-                return 1;
-            } else if (o2.getStartTime() == null) {
-                return -1;
-            } else if (o1.getStartTime().isBefore(o2.getStartTime())) {
-                return 1;
-            } else if (o2.getStartTime().isBefore(o1.getStartTime())) {
-                return -1;
-            } else {
-                return 0;
-            }
-        };
-        TreeSet<Task> prioritized = new TreeSet<>(comparator);
         prioritized.addAll(tasks.values());
         prioritized.addAll(subTasks.values());
 
-        return prioritized;
+        return List.copyOf(prioritized);
     }
 
-    private boolean checkDateCollision(Task task) {
-        if (getPrioritizedTasks().isEmpty()) {
-            return true;
-        } else {
-            for (Task t : getPrioritizedTasks()) {
-                if (t.getStartTime().equals(task.getStartTime())) {
-                    return false;
-                }
+    private void checkDateCollision(Task task) {
+        for (Task t : getPrioritizedTasks()) {
+            if (task.getId() == t.getId()) {
+                continue;
             }
+            if (task.getStartTime() == null || t.getStartTime() == null) {
+                return;
+            }
+            if (!task.getEndTime().isAfter(t.getStartTime()) || !task.getEndTime().equals(t.getStartTime())) {
+                continue;
+            }
+            if (!task.getStartTime().isAfter(t.getEndTime()) || !task.getStartTime().equals(t.getEndTime())) {
+                continue;
+            }
+            throw new IllegalStateException("Можно выполнять не более 1 задачи в заданном интервале времени!");
         }
-        return true;
     }
 }
