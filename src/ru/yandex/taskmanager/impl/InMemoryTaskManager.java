@@ -14,10 +14,15 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Integer, SubTask> subTasks = new HashMap<>();
     protected final Map<Integer, Epic> epics = new HashMap<>();
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
-    private final Set<Task> prioritized = new TreeSet<>(new PriorityComparator());
+    private static final Comparator<Task> PRIORITY_COMPARATOR = new PriorityComparator();
+    protected final Set<Task> prioritized = new TreeSet<>(PRIORITY_COMPARATOR);
 
-    private Integer getId() {
+    private Integer calculateId() {
         return ++id;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     @Override
@@ -27,18 +32,21 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createTask(Task task) {
-        int setId = getId();
+        int setId = calculateId();
         task.setId(setId);
         tasks.put(setId, task);
         checkDateCollision(task);
+        prioritized.add(task);
     }
 
 
     @Override
     public void updateTask(Task task) {
         if (tasks.containsKey(task.getId())) {
-            tasks.put(task.getId(), task);
             checkDateCollision(task);
+            prioritized.remove(task);
+            tasks.put(task.getId(), task);
+            prioritized.add(task);
         }
     }
 
@@ -53,6 +61,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllTasks() {
         for (Integer id : tasks.keySet()) {
             historyManager.remove(id);
+            prioritized.remove(tasks.get(id));
         }
         tasks.clear();
     }
@@ -73,6 +82,7 @@ public class InMemoryTaskManager implements TaskManager {
         Task task = tasks.remove(id);
         if (task != null) {
             historyManager.remove(id);
+            prioritized.remove(task);
         } else {
             System.out.println("Такой id не существует!");
         }
@@ -82,13 +92,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void createSubTask(SubTask subTask) {
         if (epics.containsKey(subTask.getEpicId())) {
-            int setId = getId();
+            int setId = calculateId();
             subTask.setId(setId);
             epics.get(subTask.getEpicId()).addRelatedSubtaskIds(subTask.getId());
             subTasks.put(setId, subTask);
             updateEpicStatus(subTask.getEpicId());
             setEpicCalendarization(subTask.getEpicId());
             checkDateCollision(subTask);
+            prioritized.add(subTask);
         } else {
             System.out.println("Для сабтаски не создан Эпик!");
 
@@ -98,10 +109,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubTask(SubTask subTask) {
         if (subTasks.containsKey(subTask.getId())) {
+            checkDateCollision(subTask);
+            prioritized.remove(subTask);
             subTasks.put(subTask.getId(), subTask);
+            prioritized.add(subTask);
             updateEpicStatus(subTask.getEpicId());
             setEpicCalendarization(subTask.getEpicId());
-            checkDateCollision(subTask);
         }
     }
 
@@ -129,10 +142,6 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(TaskStatus.IN_PROGRESS);
         }
     }
-
-
-    /*Продолжительность эпика — сумма продолжительности всех его подзадач.
-      Время начала — дата старта самой ранней подзадачи, а время завершения — время окончания самой поздней из задач*/
 
     public void setEpicCalendarization(Integer id) {
         Epic epic = epics.get(id);
@@ -176,6 +185,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllSubTasks() {
         for (Integer subtaskId : subTasks.keySet()) {
             historyManager.remove(subtaskId);
+            prioritized.remove(subTasks.get(subtaskId));
         }
         subTasks.clear();
         for (Epic epic : epics.values()) {
@@ -200,8 +210,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteSubTaskById(int id) {
         if (subTasks.containsKey(id)) {
-            SubTask subTask = subTasks.remove(id);
-            setEpicCalendarization(subTask.getEpicId());
+            Integer subTaskEpicId = subTasks.get(id).getEpicId();
+            SubTask subTask = subTasks.get(id);
+            subTask.setDuration(-subTask.getDuration());
+            setEpicCalendarization(subTaskEpicId);
+            prioritized.remove(subTasks.get(id));
+            subTasks.remove(id);
             epics.get(subTask.getEpicId()).removeRelatedSubtaskIds(subTask.getId());
             updateEpicStatus(subTask.getEpicId());
             historyManager.remove(id);
@@ -210,7 +224,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createEpic(Epic epic) {
-        int setId = getId();
+        int setId = calculateId();
         epic.setId(setId);
         epics.put(setId, epic);
     }
@@ -232,6 +246,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllEpics() {
         for (Integer subtaskId : subTasks.keySet()) {
             historyManager.remove(subtaskId);
+            prioritized.remove(subTasks.get(subtaskId));
         }
         for (Integer epicId : epics.keySet()) {
             historyManager.remove(epicId);
@@ -258,6 +273,7 @@ public class InMemoryTaskManager implements TaskManager {
             for (Map.Entry<Integer, Integer> entry : ids.entrySet()) {
                 subTasks.remove(ids.get(entry.getValue()));
                 historyManager.remove(entry.getValue());
+                prioritized.remove(subTasks.get(entry.getValue()));
             }
 
             epics.remove(epic.getId());
@@ -283,16 +299,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getPrioritizedTasks() {
-
-        prioritized.addAll(tasks.values());
-        prioritized.addAll(subTasks.values());
-
         return List.copyOf(prioritized);
     }
 
     private void checkDateCollision(Task task) {
         for (Task t : getPrioritizedTasks()) {
-            if (task.getId() == t.getId()) {
+            if (Objects.equals(task.getId(), t.getId())) {
                 continue;
             }
             if (task.getStartTime() == null || t.getStartTime() == null) {

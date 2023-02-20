@@ -10,7 +10,6 @@ import ru.yandex.taskmanager.impl.InMemoryTaskManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeSet;
 
 import static ru.yandex.model.TaskStatus.*;
 
@@ -205,12 +204,12 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         List<Task> expectedSet = new ArrayList<>();
 
         subTask2.setId(4);
-        expectedSet.add(subTask2);
         subTask1.setId(3);
-        expectedSet.add(subTask1);
         subTask3.setId(5);
-        expectedSet.add(subTask3);
         task.setId(1);
+        expectedSet.add(subTask3);
+        expectedSet.add(subTask1);
+        expectedSet.add(subTask2);
         expectedSet.add(task);
 
         Assertions.assertEquals(expectedSet.toString(), manager.getPrioritizedTasks().toString());

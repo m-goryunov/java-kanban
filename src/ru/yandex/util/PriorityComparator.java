@@ -13,15 +13,8 @@ public class PriorityComparator implements Comparator<Task> {
             return 1;
         } else if (o2.getStartTime() == null) {
             return -1;
-        }
-
-        if (o1.getStartTime().isBefore(o2.getStartTime())) {
-            return 1;
-        }
-        if (o2.getStartTime().isBefore(o1.getStartTime())) {
-            return -1;
         } else {
-            return 0;
+            return o1.getStartTime().compareTo(o2.getStartTime());
         }
     }
 }

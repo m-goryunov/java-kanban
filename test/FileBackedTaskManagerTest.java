@@ -7,7 +7,10 @@ import ru.yandex.model.Task;
 import ru.yandex.model.TaskStatus;
 import ru.yandex.taskmanager.impl.FileBackedTaskManager;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -26,6 +29,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     @BeforeEach
     void setUp() {
         manager = new FileBackedTaskManager(getActualFile());
+        loadFromFile(getActualFile());
     }
 
     @Test
@@ -40,9 +44,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
             while (buffer.ready()) {
                 String line = buffer.readLine();
                 if (line.startsWith("NAME")) {
-                    continue;
                 } else if (line.equals("")) {
-                    continue;
                 } else {
                     Assertions.fail("Файл не пуст.");
                 }
@@ -58,11 +60,8 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
             while (buffer.ready()) {
                 String line = buffer.readLine();
                 if (line.startsWith("NAME")) {
-                    continue;
                 } else if (line.startsWith("Эпик1")) {
-                    continue;
                 } else if (line.matches("[a-zA-Z ]*\\d+.*")) {
-                    continue;
                 } else {
                     Assertions.fail("Файл содержит прочие строки.");
                 }
@@ -80,7 +79,6 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
             while (buffer.ready()) {
                 String line = buffer.readLine();
                 if (line.startsWith("NAME")) {
-                    continue;
                 } else if (line.matches("[a-zA-Z ]*\\d+.*")) {
                     Assertions.fail("Файл содержит историю.");
                 }
@@ -115,9 +113,9 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         expTasks.add(task);
         expHistory.add(epic);
         expHistory.add(subTask);
-        expPriority.add(task);
-        expPriority.add(subTask);
         expPriority.add(subTask1);
+        expPriority.add(subTask);
+        expPriority.add(task);
 
 
         loadFromFile(getActualFile());
@@ -138,5 +136,44 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         Assertions.assertEquals(expEpics, actEpics, "Ошибка при загрузке Эпиков.");
         Assertions.assertEquals(expHistory, actHistory, "Ошибка при загрузке Истории.");
         Assertions.assertEquals(expPriority, actPriority, "Ошибка при загрузке отсортированных задач.");
+
+        Assertions.assertEquals(manager.getAllTasks(), loadFromFile(getActualFile()).getAllTasks(),
+                "Список задач после выгрузки не совпадает");
+
+        Assertions.assertEquals(manager.getAllSubTasks(), loadFromFile(getActualFile()).getAllSubTasks(),
+                "Список подзадач после выгрузки не совпадает");
+
+        Assertions.assertEquals(manager.getAllEpics(), loadFromFile(getActualFile()).getAllEpics(),
+                "Список эпиков после выгрузки не совпадает");
+
+        Assertions.assertEquals(manager.getHistory(), loadFromFile(getActualFile()).getHistory(),
+                "Список эпиков после выгрузки не совпадает");
+
+        Assertions.assertEquals(manager.getPrioritizedTasks(), loadFromFile(getActualFile()).getPrioritizedTasks(),
+                "Список эпиков после выгрузки не совпадает");
+        
+    }
+
+    @Test
+    void IdIsCorrectTest() {
+
+        Task task = new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, 60 * 48
+                , LocalDateTime.of(2022, 5, 6, 13, 0));
+
+        manager.createTask(task);
+
+
+        Assertions.assertEquals(loadFromFile(getActualFile()).getId(),manager.getId());
+
+        Assertions.assertEquals(task.getName(),manager.getTaskById(task.getId()).getName());
+        Assertions.assertEquals(task.getDescription(),manager.getTaskById(task.getId()).getDescription());
+        Assertions.assertEquals(task.getType(),manager.getTaskById(task.getId()).getType());
+        Assertions.assertEquals(task.getEndTime(),manager.getTaskById(task.getId()).getEndTime());
+
+        Assertions.assertEquals(task.getName(),loadFromFile(getActualFile()).getTaskById(task.getId()).getName());
+        Assertions.assertEquals(task.getDescription(),loadFromFile(getActualFile()).getTaskById(task.getId()).getDescription());
+        Assertions.assertEquals(task.getType(),loadFromFile(getActualFile()).getTaskById(task.getId()).getType());
+        Assertions.assertEquals(task.getEndTime(),loadFromFile(getActualFile()).getTaskById(task.getId()).getEndTime());
+
     }
 }

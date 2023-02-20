@@ -3,6 +3,7 @@ package ru.yandex.model;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Epic extends Task {
 
@@ -62,5 +63,18 @@ public class Epic extends Task {
                 ", startTime=" + dateFormatter(getStartTime()) +
                 ", endTime=" + dateFormatter(getEndTime()) +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Epic epic = (Epic) o;
+        return Objects.equals(relatedSubtaskIds, epic.relatedSubtaskIds) && Objects.equals(endTime, epic.endTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(relatedSubtaskIds, endTime);
     }
 }

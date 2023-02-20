@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -58,9 +58,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private static Task fromString(String value) {
         String[] lineContent = value.split(", ");
-        if (lineContent[6] == null) {
-            lineContent[6] = String.valueOf(LocalDateTime.of(2000, 1, 1, 1, 0, 0, 0));
-        }
         if (lineContent[4].equals(TaskType.TASK.toString())) {
             return new Task(
                     lineContent[0],
@@ -68,7 +65,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Enum.valueOf(TaskStatus.class, lineContent[2]),
                     Integer.parseInt(lineContent[3]),
                     Long.parseLong(lineContent[5]),
-                    LocalDateTime.parse((lineContent[6]))
+                    parseDate(lineContent[6])
             );
         } else if (lineContent[4].equals(TaskType.SUBTASK.toString())) {
             return new SubTask(
@@ -77,7 +74,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Enum.valueOf(TaskStatus.class, lineContent[2]),
                     Integer.parseInt(lineContent[3]),
                     Long.parseLong(lineContent[5]),
-                    LocalDateTime.parse((lineContent[6])),
+                    parseDate(lineContent[6]),
                     Integer.parseInt(lineContent[8])
             );
         } else {
@@ -86,12 +83,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     lineContent[1],
                     Integer.parseInt(lineContent[3]),
                     Integer.parseInt(lineContent[5]),
-                    LocalDateTime.parse((lineContent[6])),
-                    LocalDateTime.parse((lineContent[7]))
+                    parseDate(lineContent[6]),
+                    parseDate(lineContent[7])
             );
             epic.setStatus(Enum.valueOf(TaskStatus.class, lineContent[2]));
             return epic;
         }
+    }
+
+    private static LocalDateTime parseDate(String date) {
+        if (Objects.equals(date, "null")) {
+            return null;
+        }
+        return LocalDateTime.parse(date);
     }
 
 
@@ -121,11 +125,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
 
         try (BufferedReader buffer = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
-
+            buffer.readLine();
             while (buffer.ready()) {
                 String line = buffer.readLine();
-                if (line.equals("") || line.startsWith("NAME")) {
-                    continue;
+                if (line.equals("")) {
 
                 } else if (line.matches("[a-zA-Z ]*\\d+.*")) {
                     List<Integer> IDs = List.copyOf(historyFromString(line));
@@ -139,7 +142,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                             manager.historyManager.add(manager.epics.get(id));
                         }
                     }
-                    //System.out.println("History... " + manager.getHistory().toString());
                 } else {
                     Task task = fromString(line);
                     if (manager.id < task.getId()) {
@@ -149,17 +151,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
                     if (task.getType().equals(TaskType.TASK)) {
                         manager.tasks.put(task.getId(), task);
+                        manager.prioritized.add(task);
                     } else if (task.getType() == TaskType.SUBTASK) {
                         SubTask subTask = (SubTask) task;
                         manager.subTasks.put(task.getId(), subTask);
                         manager.epics.get(subTask.getEpicId()).addRelatedSubtaskIds(subTask.getId());
+                        manager.prioritized.add(subTask);
                     } else if (task.getType() == TaskType.EPIC) {
                         Epic epic = new Epic(task.getName(), task.getDescription(), task.getId(), task.getDuration(), task.getStartTime(), task.getEndTime());
                         manager.epics.put(task.getId(), epic);
                     }
-/*                    System.out.println(manager.tasks);
-                    System.out.println(manager.subTasks);
-                    System.out.println(manager.epics);*/
                 }
             }
         } catch (IOException e) {
