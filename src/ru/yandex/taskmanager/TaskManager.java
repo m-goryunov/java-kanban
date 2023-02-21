@@ -45,7 +45,7 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
-    void updateEpicStatus(Integer id);
-
     List<Task> getPrioritizedTasks();
+
+    void getUpdateEpicStatus(Integer id);
 }

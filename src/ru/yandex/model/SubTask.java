@@ -12,9 +12,13 @@ public class SubTask extends Task {
         this.epicId = epicId;
     }
 
-    public Integer getEpicId() {return epicId;}
+    public Integer getEpicId() {
+        return epicId;
+    }
 
-    public void setEpicId(Integer epicId) {this.epicId = epicId;}
+    public void setEpicId(Integer epicId) {
+        this.epicId = epicId;
+    }
 
     @Override
     public TaskType getType() {
@@ -40,11 +44,26 @@ public class SubTask extends Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SubTask subTask = (SubTask) o;
-        return Objects.equals(epicId, subTask.epicId);
+        return Objects.equals(epicId, subTask.epicId) &&
+                Objects.equals(subTask.getName(), getName()) &&
+                Objects.equals(subTask.getDescription(), getDescription()) &&
+                Objects.equals(subTask.getId(), getId()) &&
+                subTask.getStatus() == getStatus() &&
+                Objects.equals(subTask.getDuration(), getDuration()) &&
+                Objects.equals(subTask.getStartTime(), getStartTime()) &&
+                Objects.equals(subTask.getEndTime(), getEndTime()
+                );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(epicId);
+        return Objects.hash(epicId,
+                getName(),
+                getDescription(),
+                getId(),
+                getStatus(),
+                getDuration(),
+                getStartTime(),
+                getEndTime());
     }
 }

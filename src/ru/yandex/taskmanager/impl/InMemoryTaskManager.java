@@ -6,6 +6,7 @@ import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.util.*;
 import ru.yandex.model.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -44,7 +45,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateTask(Task task) {
         if (tasks.containsKey(task.getId())) {
             checkDateCollision(task);
-            prioritized.remove(task);
+            prioritized.remove(tasks.get(task.getId()));
             tasks.put(task.getId(), task);
             prioritized.add(task);
         }
@@ -110,7 +111,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubTask(SubTask subTask) {
         if (subTasks.containsKey(subTask.getId())) {
             checkDateCollision(subTask);
-            prioritized.remove(subTask);
+            prioritized.remove(subTasks.get(subTask.getId()));
             subTasks.put(subTask.getId(), subTask);
             prioritized.add(subTask);
             updateEpicStatus(subTask.getEpicId());
@@ -118,7 +119,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public void updateEpicStatus(Integer id) {
+    protected void updateEpicStatus(Integer id) {
         Epic epic = epics.get(id);
         int countNew = 0;
         int countDone = 0;
@@ -143,36 +144,42 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    public void getUpdateEpicStatus(Integer id){
+        updateEpicStatus(id);
+    }
+
     public void setEpicCalendarization(Integer id) {
+        LocalDateTime startTime = null;
+        LocalDateTime endTime = null;
+        long duration = 0L;
         Epic epic = epics.get(id);
-        long durationCount = 0;
+
         Map<Integer, Integer> ids = epic.getRelatedSubtaskIds();
         for (Integer subTaskId : ids.keySet()) {
-            durationCount += subTasks.get(subTaskId).getDuration();
-        }
-        epic.setDuration(durationCount);
-
-        Comparator<SubTask> comparator = (o1, o2) -> {
-            if (o1.getStartTime().isBefore(o2.getStartTime())) {
-                return -1;
-            } else if (o2.getStartTime().isBefore(o1.getStartTime())) {
-                return 1;
+            SubTask subtask = subTasks.get(subTaskId);
+            LocalDateTime existEndTime;
+            LocalDateTime existStartTime;
+            if(subtask != null) {
+                existEndTime = subtask.getEndTime();
+                existStartTime = subtask.getStartTime();
             } else {
-                return 0;
+                existEndTime = null;
+                existStartTime = null;
             }
-        };
 
-        TreeSet<SubTask> set = new TreeSet<>(comparator);
-
-        for (Integer subTaskId : ids.keySet()) {
-            if (subTasks.get(subTaskId).getStartTime() != null) {
-                set.add(subTasks.get(subTaskId));
+            if (existStartTime != null) {
+                if (endTime == null || existEndTime.isAfter(endTime)) {
+                    endTime = existEndTime;
+                }
+                if (startTime == null || existStartTime.isBefore(startTime)) {
+                    startTime = existStartTime;
+                }
+                duration+=subtask.getDuration();
             }
         }
-
-        epic.setStartTime(set.first().getStartTime());
-        epic.setEndTime(set.last().getEndTime());
-
+        epic.setDuration(duration);
+        epic.setStartTime(startTime);
+        epic.setEndTime(endTime);
     }
 
     @Override
@@ -212,10 +219,9 @@ public class InMemoryTaskManager implements TaskManager {
         if (subTasks.containsKey(id)) {
             Integer subTaskEpicId = subTasks.get(id).getEpicId();
             SubTask subTask = subTasks.get(id);
-            subTask.setDuration(-subTask.getDuration());
-            setEpicCalendarization(subTaskEpicId);
-            prioritized.remove(subTasks.get(id));
+            prioritized.remove(subTask);
             subTasks.remove(id);
+            setEpicCalendarization(subTaskEpicId);
             epics.get(subTask.getEpicId()).removeRelatedSubtaskIds(subTask.getId());
             updateEpicStatus(subTask.getEpicId());
             historyManager.remove(id);

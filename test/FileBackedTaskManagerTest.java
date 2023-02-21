@@ -29,7 +29,6 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     @BeforeEach
     void setUp() {
         manager = new FileBackedTaskManager(getActualFile());
-        loadFromFile(getActualFile());
     }
 
     @Test
@@ -93,7 +92,6 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         List<Epic> expEpics = new ArrayList<>();
         List<Task> expHistory = new ArrayList<>();
         List<Task> expPriority = new ArrayList<>();
-
 
         Epic epic = new Epic("Эпик1", "Темная тема в Пачке", null, 60 * 48, LocalDateTime.now(), null);
         SubTask subTask = new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 48, LocalDateTime.now(), 1);
@@ -161,19 +159,19 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
                 , LocalDateTime.of(2022, 5, 6, 13, 0));
 
         manager.createTask(task);
+        FileBackedTaskManager backedManager = FileBackedTaskManager.loadFromFile(getActualFile());
 
-
-        Assertions.assertEquals(loadFromFile(getActualFile()).getId(),manager.getId());
+        Assertions.assertEquals(backedManager.getId(),manager.getId());
 
         Assertions.assertEquals(task.getName(),manager.getTaskById(task.getId()).getName());
         Assertions.assertEquals(task.getDescription(),manager.getTaskById(task.getId()).getDescription());
         Assertions.assertEquals(task.getType(),manager.getTaskById(task.getId()).getType());
         Assertions.assertEquals(task.getEndTime(),manager.getTaskById(task.getId()).getEndTime());
 
-        Assertions.assertEquals(task.getName(),loadFromFile(getActualFile()).getTaskById(task.getId()).getName());
-        Assertions.assertEquals(task.getDescription(),loadFromFile(getActualFile()).getTaskById(task.getId()).getDescription());
-        Assertions.assertEquals(task.getType(),loadFromFile(getActualFile()).getTaskById(task.getId()).getType());
-        Assertions.assertEquals(task.getEndTime(),loadFromFile(getActualFile()).getTaskById(task.getId()).getEndTime());
+        Assertions.assertEquals(task.getName(),backedManager.getTaskById(task.getId()).getName());
+        Assertions.assertEquals(task.getDescription(),backedManager.getTaskById(task.getId()).getDescription());
+        Assertions.assertEquals(task.getType(),backedManager.getTaskById(task.getId()).getType());
+        Assertions.assertEquals(task.getEndTime(),backedManager.getTaskById(task.getId()).getEndTime());
 
     }
 }

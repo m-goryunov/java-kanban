@@ -105,19 +105,19 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
 
         Assertions.assertEquals(NEW, epic.getStatus());
         subTask1.setStatus(IN_PROGRESS);
-        manager.updateEpicStatus(epic.getId());
+        manager.getUpdateEpicStatus(epic.getId());
         Assertions.assertEquals(IN_PROGRESS, epic.getStatus());
         subTask2.setStatus(DONE);
-        manager.updateEpicStatus(epic.getId());
+        manager.getUpdateEpicStatus(epic.getId());
         Assertions.assertEquals(IN_PROGRESS, epic.getStatus());
         subTask3.setStatus(DONE);
-        manager.updateEpicStatus(epic.getId());
+        manager.getUpdateEpicStatus(epic.getId());
         Assertions.assertEquals(IN_PROGRESS, epic.getStatus());
         subTask1.setStatus(DONE);
-        manager.updateEpicStatus(epic.getId());
+        manager.getUpdateEpicStatus(epic.getId());
         Assertions.assertEquals(DONE, epic.getStatus());
         manager.deleteAllSubTasks();
-        manager.updateEpicStatus(epic.getId());
+        manager.getUpdateEpicStatus(epic.getId());
         Assertions.assertEquals(NEW, epic.getStatus());
     }
 
@@ -185,8 +185,6 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         Task task = new Task("Test addNewTask", "Test addNewTask description", NEW, null
                 , 60 * 48, null);
         Task task1 = new Task("Test Validate", "Test Validate", NEW, null
-                , 60 * 12, LocalDateTime.of(2022, 5, 6, 13, 0));
-        Task task2 = new Task("Test Validate", "Test Validate", NEW, null
                 , 60 * 12, LocalDateTime.of(2022, 5, 6, 13, 0));
 
         manager.createTask(task);

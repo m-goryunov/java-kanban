@@ -3,7 +3,6 @@ package ru.yandex.model;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-import java.util.Optional;
 
 public class Task {
     private String name;
@@ -110,7 +109,12 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return duration == task.duration && Objects.equals(name, task.name) && Objects.equals(description, task.description) && status == task.status && Objects.equals(id, task.id) && Objects.equals(startTime, task.startTime);
+        return duration == task.duration &&
+                Objects.equals(name, task.name) &&
+                Objects.equals(description, task.description) &&
+                status == task.status &&
+                Objects.equals(id, task.id) &&
+                Objects.equals(startTime, task.startTime);
     }
 
     @Override
