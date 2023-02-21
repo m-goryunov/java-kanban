@@ -43,27 +43,13 @@ public class SubTask extends Task {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         SubTask subTask = (SubTask) o;
-        return Objects.equals(epicId, subTask.epicId) &&
-                Objects.equals(subTask.getName(), getName()) &&
-                Objects.equals(subTask.getDescription(), getDescription()) &&
-                Objects.equals(subTask.getId(), getId()) &&
-                subTask.getStatus() == getStatus() &&
-                Objects.equals(subTask.getDuration(), getDuration()) &&
-                Objects.equals(subTask.getStartTime(), getStartTime()) &&
-                Objects.equals(subTask.getEndTime(), getEndTime()
-                );
+        return Objects.equals(epicId, subTask.epicId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(epicId,
-                getName(),
-                getDescription(),
-                getId(),
-                getStatus(),
-                getDuration(),
-                getStartTime(),
-                getEndTime());
+        return Objects.hash(super.hashCode(), epicId);
     }
 }

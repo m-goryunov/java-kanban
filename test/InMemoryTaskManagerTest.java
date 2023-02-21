@@ -105,19 +105,19 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
 
         Assertions.assertEquals(NEW, epic.getStatus());
         subTask1.setStatus(IN_PROGRESS);
-        manager.getUpdateEpicStatus(epic.getId());
+        manager.updateEpicStatus(epic.getId());
         Assertions.assertEquals(IN_PROGRESS, epic.getStatus());
         subTask2.setStatus(DONE);
-        manager.getUpdateEpicStatus(epic.getId());
+        manager.updateEpicStatus(epic.getId());
         Assertions.assertEquals(IN_PROGRESS, epic.getStatus());
         subTask3.setStatus(DONE);
-        manager.getUpdateEpicStatus(epic.getId());
+        manager.updateEpicStatus(epic.getId());
         Assertions.assertEquals(IN_PROGRESS, epic.getStatus());
         subTask1.setStatus(DONE);
-        manager.getUpdateEpicStatus(epic.getId());
+        manager.updateEpicStatus(epic.getId());
         Assertions.assertEquals(DONE, epic.getStatus());
         manager.deleteAllSubTasks();
-        manager.getUpdateEpicStatus(epic.getId());
+        manager.updateEpicStatus(epic.getId());
         Assertions.assertEquals(NEW, epic.getStatus());
     }
 
