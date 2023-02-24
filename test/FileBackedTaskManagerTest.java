@@ -172,6 +172,5 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         Assertions.assertEquals(task.getDescription(),backedManager.getTaskById(task.getId()).getDescription());
         Assertions.assertEquals(task.getType(),backedManager.getTaskById(task.getId()).getType());
         Assertions.assertEquals(task.getEndTime(),backedManager.getTaskById(task.getId()).getEndTime());
-
     }
 }
