@@ -10,13 +10,10 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import ru.yandex.util.Managers;
 
 
 public class KVServer {
-
-/*    public static void main(String[] args) throws IOException {
-        new KVServer().start();
-    }*/
 
     public static final int PORT = 8078;
     private final String apiToken;
@@ -31,83 +28,88 @@ public class KVServer {
         server.createContext("/load", this::load);
     }
 
-    private void load(HttpExchange h) throws IOException {
+    private void load(HttpExchange exchange) throws IOException {
         try {
             System.out.println("\n/load");
-            if (!hasAuth(h)) {
+            if (!hasAuth(exchange)) {
                 System.out.println("Запрос неавторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
-                h.sendResponseHeaders(403, 0);
+                exchange.sendResponseHeaders(403, 0);
                 return;
             }
-            if ("GET".equals(h.getRequestMethod())) {
-                String key = h.getRequestURI().getPath().substring("/load/".length());
+            if ("GET".equals(exchange.getRequestMethod())) {
+                String key = exchange.getRequestURI().getPath().substring("/load/".length());
                 if (key.isEmpty()) {
                     System.out.println("Key для выгрузки пустой. key указывается в пути: /load/{key}");
-                    h.sendResponseHeaders(400, 0);
+                    exchange.sendResponseHeaders(400, 0);
                     return;
                 }
 
-                Gson gson = new Gson();
-                String data1 = gson.toJson(data.get(key));
-                sendText(h, data1);
+                if (!data.get(key).isEmpty() || data.get(key) != null) {
+                    Gson gson = Managers.getGson();
+                    //String data1 = gson.toJson();
+                    sendText(exchange, data.get(key));
+                    System.out.println("Значение для ключа " + key + " успешно выгружено!");
+                    exchange.sendResponseHeaders(200, 0);
+                } else {
+                    System.out.println("Ошибка при выгрузке Value!");
+                    exchange.sendResponseHeaders(400, 0);
+                }
 
-
-                System.out.println("Значение для ключа " + data1 + " успешно выгружено!");
-                h.sendResponseHeaders(200, 0);
             } else {
-                System.out.println("/load ждёт POST-запрос, а получил: " + h.getRequestMethod());
-                h.sendResponseHeaders(405, 0);
+                System.out.println("/load ждёт GET-запрос, а получил: " + exchange.getRequestMethod());
+                exchange.sendResponseHeaders(405, 0);
             }
         } finally {
-            h.close();
+            exchange.close();
         }
 
     }
 
-    private void save(HttpExchange h) throws IOException {
+    private void save(HttpExchange exchange) throws IOException {
         try {
             System.out.println("\n/save");
-            if (!hasAuth(h)) {
+            if (!hasAuth(exchange)) {
                 System.out.println("Запрос неавторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
-                h.sendResponseHeaders(403, 0);
+                exchange.sendResponseHeaders(403, 0);
                 return;
             }
-            if ("POST".equals(h.getRequestMethod())) {
-                String key = h.getRequestURI().getPath().substring("/save/".length());
+            if ("POST".equals(exchange.getRequestMethod())) {
+                String key = exchange.getRequestURI().getPath().substring("/save/".length());
                 if (key.isEmpty()) {
                     System.out.println("Key для сохранения пустой. key указывается в пути: /save/{key}");
-                    h.sendResponseHeaders(400, 0);
+                    exchange.sendResponseHeaders(400, 0);
                     return;
                 }
-                String value = readText(h);
+                String value = readText(exchange);
                 if (value.isEmpty()) {
                     System.out.println("Value для сохранения пустой. value указывается в теле запроса");
-                    h.sendResponseHeaders(400, 0);
+                    exchange.sendResponseHeaders(400, 0);
                     return;
                 }
                 data.put(key, value);
                 System.out.println("Значение для ключа " + key + " успешно обновлено!");
-                h.sendResponseHeaders(200, 0);
+                System.out.println(data);
+                exchange.sendResponseHeaders(200, 0);
             } else {
-                System.out.println("/save ждёт POST-запрос, а получил: " + h.getRequestMethod());
-                h.sendResponseHeaders(405, 0);
+                System.out.println("/save ждёт POST-запрос, а получил: " + exchange.getRequestMethod());
+                exchange.sendResponseHeaders(405, 0);
             }
         } finally {
-            h.close();
+            exchange.close();
         }
     }
 
-    private void register(HttpExchange h) throws IOException {
+    private void register(HttpExchange exchange) throws IOException {
         try {
             System.out.println("\n/register");
-            if ("GET".equals(h.getRequestMethod())) {
-                sendText(h, apiToken);
+            if ("GET".equals(exchange.getRequestMethod())) {
+                sendText(exchange, apiToken);
             } else {
-                System.out.println("/register ждёт GET-запрос, а получил " + h.getRequestMethod());
-                h.sendResponseHeaders(405, 0);
+                System.out.println("/register ждёт GET-запрос, а получил " + exchange.getRequestMethod());
+                exchange.sendResponseHeaders(405, 0);
             }
         } finally {
-            h.close();
+            exchange.close();
         }
     }
 
@@ -115,6 +117,11 @@ public class KVServer {
         System.out.println("Запускаем KV сервер на порту " + PORT);
         System.out.println("API_TOKEN: " + apiToken);
         server.start();
+    }
+
+    public void stop() {
+        System.out.println("Остановили сервер на " + PORT);
+        server.stop(0);
     }
 
     private String generateApiToken() {

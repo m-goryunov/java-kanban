@@ -1,28 +1,23 @@
 package ru.yandex.server;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import ru.yandex.model.Epic;
+import ru.yandex.model.SubTask;
 import ru.yandex.model.Task;
 import ru.yandex.model.TaskStatus;
 import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.util.Managers;
 
 import java.io.IOException;
-import java.io.InterruptedIOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.regex.Pattern;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HttpTaskServer {
 
@@ -31,6 +26,7 @@ public class HttpTaskServer {
 
     private TaskManager taskManager;
     private HttpServer server;
+    private Gson gson;
 
     public HttpTaskServer() throws IOException {
         this(Managers.getDefaultBacked());
@@ -38,31 +34,25 @@ public class HttpTaskServer {
 
     public HttpTaskServer(TaskManager taskManager) throws IOException {
         this.taskManager = taskManager;
-        Gson gson = Managers.getGson();
+        gson = Managers.getGson();
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         server.createContext("/tasks", this::tasksHandler);
-
-    }
-
-    public static void main(String[] args) throws IOException {
-        HttpTaskServer taskServer = new HttpTaskServer();
-        KVServer KVServer = new KVServer();
-        taskServer.start();
-        KVServer.start();
     }
 
     private void tasksHandler(HttpExchange exchange) {
         try {
             Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
-            Gson gson = Managers.getGson();
             String path = exchange.getRequestURI().getPath();
 
             switch (endpoint) {
                 case GET_ALL_TASKS: {
-
+                    String response = gson.toJson(taskManager.getPrioritizedTasks());
+                    writeResponse(exchange, response, 200);
+                    break;
                 }
                 case GET_HISTORY: {
-
+                    String response = gson.toJson(taskManager.getHistory());
+                    writeResponse(exchange, response, 200);
                 }
                 case GET_TASKS: {
                     String response = gson.toJson(taskManager.getAllTasks());
@@ -70,7 +60,10 @@ public class HttpTaskServer {
                     break;
                 }
                 case DELETE_TASKS: {
-
+                    taskManager.deleteAllTasks();
+                    String response = "Успешно удалено.";
+                    writeResponse(exchange, response, 200);
+                    break;
                 }
                 case DELETE_TASK_BY_ID: {
                     String pathId = path.replaceFirst("/tasks/task/", "");
@@ -97,7 +90,40 @@ public class HttpTaskServer {
                     break;
                 }
                 case POST_TASK_BY_ID: {
+                    String pathId = path.replaceFirst("/tasks/task/", "");
+                    int id = parsePathId(pathId);
+                    if (id != -1) {
+                        InputStream stream = exchange.getRequestBody();
+                        String request = new String(stream.readAllBytes(), DEFAULT_CHARSET);
 
+                        try {
+                            Task fromJsonTask = gson.fromJson(request, Task.class);
+
+                            if (fromJsonTask.getId() == null || fromJsonTask.getName().isEmpty()) {
+                                writeResponse(exchange, "Поля задачи не могут быть пустым", 400);
+                                return;
+                            }
+                            if (taskManager.getTaskById(id) == null) {
+                                taskManager.createTask(fromJsonTask);
+                                System.out.println();
+                                writeResponse(exchange, "Задача с id " + id + " создана.", 200);
+                                System.out.println(fromJsonTask);
+                                return;
+                            } else {
+                                taskManager.updateTask(fromJsonTask);
+                                writeResponse(exchange, "Задача с id " + id + " обновлена.", 200);
+                                System.out.println(fromJsonTask);
+                                return;
+                            }
+
+                        } catch (JsonSyntaxException e) {
+                            writeResponse(exchange, "Получен некорректный JSON", 400);
+                            return;
+                        }
+                    } else {
+                        writeResponse(exchange, "Ошибка", 404);
+                    }
+                    break;
                 }
                 case GET_SUBTASKS: {
                     String response = gson.toJson(taskManager.getAllSubTasks());
@@ -105,7 +131,10 @@ public class HttpTaskServer {
                     break;
                 }
                 case DELETE_SUBTASKS: {
-
+                    taskManager.deleteAllSubTasks();
+                    String response = "Успешно удалено.";
+                    writeResponse(exchange, response, 200);
+                    break;
                 }
                 case DELETE_SUBTASK_BY_ID: {
                     String pathId = path.replaceFirst("/tasks/subtask/", "");
@@ -131,7 +160,40 @@ public class HttpTaskServer {
                     break;
                 }
                 case POST_SUBTASK_BY_ID: {
+                    String pathId = path.replaceFirst("/tasks/subtask/", "");
+                    int id = parsePathId(pathId);
+                    if (id != -1) {
+                        InputStream stream = exchange.getRequestBody();
+                        String request = new String(stream.readAllBytes(), DEFAULT_CHARSET);
 
+                        try {
+                            SubTask fromJsonTask = gson.fromJson(request, SubTask.class);
+
+                            if (fromJsonTask.getId() == null || fromJsonTask.getName().isEmpty()) {
+                                writeResponse(exchange, "Поля задачи не могут быть пустым", 400);
+                                return;
+                            }
+                            if (taskManager.getSubTaskById(id) == null) {
+                                taskManager.createSubTask(fromJsonTask);
+                                System.out.println();
+                                writeResponse(exchange, "Задача с id " + id + " создана.", 200);
+                                System.out.println(fromJsonTask);
+                                return;
+                            } else {
+                                taskManager.updateSubTask(fromJsonTask);
+                                writeResponse(exchange, "Задача с id " + id + " обновлена.", 200);
+                                System.out.println(fromJsonTask);
+                                return;
+                            }
+
+                        } catch (JsonSyntaxException e) {
+                            writeResponse(exchange, "Получен некорректный JSON", 400);
+                            return;
+                        }
+                    } else {
+                        writeResponse(exchange, "Ошибка", 404);
+                    }
+                    break;
                 }
                 case GET_EPICS: {
                     String response = gson.toJson(taskManager.getAllEpics());
@@ -139,6 +201,10 @@ public class HttpTaskServer {
                     break;
                 }
                 case DELETE_EPICS: {
+                    taskManager.deleteAllEpics();
+                    String response = "Успешно удалено.";
+                    writeResponse(exchange, response, 200);
+                    break;
 
                 }
                 case DELETE_EPIC_BY_ID: {
@@ -158,29 +224,57 @@ public class HttpTaskServer {
                     String pathId = path.replaceFirst("/tasks/epic/", "");
                     int id = parsePathId(pathId);
                     if (id != -1) {
-                        String response = gson.toJson(taskManager.getSubTaskById(id));
+                        String response = gson.toJson(taskManager.getEpicById(id));
                         writeResponse(exchange, response, 200);
                     } else {
                         writeResponse(exchange, "Ошибка", 404);
                     }
                     break;
-
                 }
                 case POST_EPIC_BY_ID: {
+                    String pathId = path.replaceFirst("/tasks/epic/", "");
+                    int id = parsePathId(pathId);
+                    if (id != -1) {
+                        InputStream stream = exchange.getRequestBody();
+                        String request = new String(stream.readAllBytes(), DEFAULT_CHARSET);
 
+                        try {
+                            Epic fromJsonTask = gson.fromJson(request, Epic.class);
+
+                            if (fromJsonTask.getId() == null || fromJsonTask.getName().isEmpty()) {
+                                writeResponse(exchange, "Поля задачи не могут быть пустым", 400);
+                                return;
+                            }
+                            if (taskManager.getEpicById(id) == null) {
+                                taskManager.createEpic(fromJsonTask);
+                                System.out.println(fromJsonTask);
+                                writeResponse(exchange, "Задача с id " + id + " создана.", 200);
+                                System.out.println(fromJsonTask);
+                                return;
+                            } else {
+                                taskManager.updateEpic(fromJsonTask);
+                                writeResponse(exchange, "Задача с id " + id + " обновлена.", 200);
+                                System.out.println(fromJsonTask);
+                                return;
+                            }
+
+                        } catch (JsonSyntaxException e) {
+                            writeResponse(exchange, "Получен некорректный JSON", 400);
+                            return;
+                        }
+                    } else {
+                        writeResponse(exchange, "Ошибка", 404);
+                    }
+                    break;
                 }
-
                 default:
                     writeResponse(exchange, "Такого эндпоинта не существует", 404);
-                    //exchange.sendResponseHeaders(404, 0);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             exchange.close();
         }
-
     }
 
     private Endpoint getEndpoint(String path, String requestMethod) {
@@ -304,171 +398,4 @@ public class HttpTaskServer {
         GET_EPICS, DELETE_EPICS, DELETE_EPIC_BY_ID, GET_EPIC_BY_ID, POST_EPIC_BY_ID,
         UNKNOWN
     }
-
-    /*
-
-    static class TasksHandler implements HttpHandler {
-        TaskManager manager = Managers.getDefaultBacked();
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
-
-            switch (endpoint) {
-                case GET_ALL_TASKS: {
-                    break;
-                }
-                case GET_HISTORY: {
-                    break;
-                }
-                case GET_TASKS: {
-
-                    break;
-                }
-                case DELETE_TASKS: {
-                    break;
-                }
-                case DELETE_TASK_BY_ID: {
-                    break;
-                }
-                case GET_TASK_BY_ID: {
-
-                    break;
-                }
-                case POST_TASK_BY_ID: {
-
-                    break;
-                }
-                case GET_SUBTASKS: {
-                    break;
-                }
-                case DELETE_SUBTASKS: {
-                    break;
-                }
-                case DELETE_SUBTASK_BY_ID: {
-                    break;
-                }
-                case GET_SUBTASK_BY_ID: {
-                    break;
-                }
-                case POST_SUBTASK_BY_ID: {
-                    break;
-                }
-                case GET_EPICS: {
-                    break;
-                }
-                case DELETE_EPICS: {
-                    break;
-                }
-                case DELETE_EPIC_BY_ID: {
-                    break;
-                }
-                case GET_EPIC_BY_ID: {
-                    break;
-                }
-                case POST_EPIC_BY_ID: {
-                    break;
-                }
-
-                default:
-                    //writeResponse(exchange, "Такого эндпоинта не существует", 404);
-                    exchange.sendResponseHeaders(404, 0);
-            }
-        }
-
-        private Endpoint getEndpoint(String requestPath, String requestMethod) {
-
-            */
-/*
-
-            Эндпоинты http://localhost8080/tasks/
-             GET /tasks/task/
-             GET /tasks/task/?id=
-             POST /tasks/task/ Body: {task .}
-             DELETE /tasks/task/?id= Запросы
-             DELETE /tasks/task/
-                    /tasks/subtask/
-                    /tasks/epic/
-             GET /tasks/subtask/epic/?id=
-             GET /tasks/history
-             GET /tasks/
-            *//*
-
-            String[] pathParts = requestPath.split("/");
-            switch (requestMethod) {
-                case "GET": {
-                    if (pathParts.length == 2 && pathParts[1].equals("tasks")) {
-                        return Endpoint.GET_ALL_TASKS;
-                    }
-                    if (pathParts.length == 3 && pathParts[1].equals("tasks") && pathParts[2].equals("history")) {
-                        return Endpoint.GET_HISTORY;
-                    }
-                    if (pathParts.length == 3 && pathParts[1].equals("tasks")) {
-                        if (pathParts[2].equals("task")) {
-                            return Endpoint.GET_TASKS;
-                        }
-                        if (pathParts[2].equals("subtask")) {
-                            return Endpoint.GET_SUBTASKS;
-                        }
-                        if (pathParts[2].equals("epic")) {
-                            return Endpoint.GET_EPICS;
-                        }
-                    }
-                    if (pathParts.length == 4 && pathParts[1].equals("tasks")) {
-                        if (pathParts[2].equals("task")) {
-                            return Endpoint.GET_TASK_BY_ID;
-                        }
-                        if (pathParts[2].equals("subtask")) {
-                            return Endpoint.GET_SUBTASK_BY_ID;
-                        }
-                        if (pathParts[2].equals("epic")) {
-                            return Endpoint.GET_EPIC_BY_ID;
-                        }
-                    }
-                    break;
-                }
-                case "POST": {
-                    if (pathParts.length == 4 && pathParts[1].equals("tasks")) {
-                        if (pathParts[2].equals("task")) {
-                            return Endpoint.POST_TASK_BY_ID;
-                        }
-                        if (pathParts[2].equals("subtask")) {
-                            return Endpoint.POST_SUBTASK_BY_ID;
-                        }
-                        if (pathParts[2].equals("epic")) {
-                            return Endpoint.POST_EPIC_BY_ID;
-                        }
-                    }
-                    break;
-                }
-                case "DELETE": {
-                    if (pathParts.length == 3 && pathParts[1].equals("tasks")) {
-                        if (pathParts[2].equals("task")) {
-                            return Endpoint.DELETE_TASKS;
-                        }
-                        if (pathParts[2].equals("subtask")) {
-                            return Endpoint.DELETE_SUBTASKS;
-                        }
-                        if (pathParts[2].equals("epic")) {
-                            return Endpoint.DELETE_EPICS;
-                        }
-                    }
-                    if (pathParts.length == 4 && pathParts[1].equals("tasks")) {
-                        if (pathParts[2].equals("task")) {
-                            return Endpoint.DELETE_TASK_BY_ID;
-                        }
-                        if (pathParts[2].equals("subtask")) {
-                            return Endpoint.DELETE_SUBTASK_BY_ID;
-                        }
-                        if (pathParts[2].equals("epic")) {
-                            return Endpoint.DELETE_EPIC_BY_ID;
-                        }
-                    }
-                    break;
-                }
-            }
-            return Endpoint.UNKNOWN;
-        }
-    }
-*/
 }

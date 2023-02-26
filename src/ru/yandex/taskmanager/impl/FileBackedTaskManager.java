@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    private final File file;
+    private File file;
     private static final String title = "NAME, DESCRIPTION, STATUS, ID, TYPE, DURATION, START_TIME, END_TIME, EPIC_ID";
 
 
@@ -22,7 +22,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.file = file;
     }
 
-    private void save() {
+    public FileBackedTaskManager() {
+    }
+
+    protected void save() {
         try (Writer fw = new FileWriter(file)) {
             fw.write(title + '\n');
 
@@ -49,14 +52,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
 
-    private String toString(Task task) {
+    protected String toString(Task task) {
         return task.getName() + ", " + task.getDescription() + ", " + task.getStatus()
                 + ", " + task.getId() + ", " + task.getType() + ", " + task.getDuration() + ", " + task.getStartTime()
                 + ", " + task.getEndTime();
     }
 
 
-    private static Task fromString(String value) {
+    protected static Task fromString(String value) {
         String[] lineContent = value.split(", ");
         if (lineContent[4].equals(TaskType.TASK.toString())) {
             return new Task(
@@ -99,7 +102,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
 
-    private static String historyToString(HistoryManager manager) {
+    protected static String historyToString(HistoryManager manager) {
         List<Task> getIDs = List.copyOf(manager.getHistory());
         List<String> ids = new ArrayList<>();
         for (int i = 0; i < manager.getHistory().size(); i++) {
@@ -110,7 +113,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
 
-    private static List<Integer> historyFromString(String value) {
+    protected static List<Integer> historyFromString(String value) {
         List<Integer> history = new ArrayList<>();
         String[] values = value.split(",");
 

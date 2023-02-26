@@ -1,124 +1,42 @@
 package ru.yandex;
 
+import ru.yandex.model.Epic;
+import ru.yandex.model.SubTask;
+import ru.yandex.model.Task;
+import ru.yandex.model.TaskStatus;
+import ru.yandex.server.HttpTaskServer;
+import ru.yandex.server.KVServer;
 import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.util.Managers;
-import ru.yandex.model.*;
 
+import java.io.IOException;
+import java.net.URI;
 import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.Scanner;
+
+import static ru.yandex.taskmanager.impl.HttpTaskManager.loadFromServer;
+
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        Scanner scanner = new Scanner(System.in);
-        TaskManager taskManager = Managers.getDefault();
+        TaskManager manager = Managers.getDefault();
+        KVServer server = new KVServer();
+        server.start();
 
-        printMenu();
-        while (true) {
-            switch (scanner.nextInt()) {
-                case 1 -> {
-                    System.out.println(taskManager.getAllTasks().toString());
-                    System.out.println(taskManager.getAllEpics().toString());
-                    System.out.println(taskManager.getAllSubTasks().toString());
+        HttpTaskServer taskServer = new HttpTaskServer();
+        taskServer.start();
 
-                }
-                case 2 -> {
-                    System.out.println("Что удаляем? \n 1. Таски \n 2. Эпики \n 3. Сабтаски");
-                    switch (scanner.nextInt()) {
-                        case 1 -> taskManager.deleteAllTasks();
-                        case 2 -> taskManager.deleteAllEpics();
-                        case 3 -> taskManager.deleteAllSubTasks();
-                    }
-                }
-                case 3 -> {
-                    System.out.println("Введите ID");
-                    int printID = scanner.nextInt();
-                    System.out.println("Какую задачу показать? \n 1. Таски \n 2. Эпики \n 3. Сабтаски");
-                    switch (scanner.nextInt()) {
-                        case 1 -> System.out.println(taskManager.getTaskById(printID));
-                        case 2 -> System.out.println(taskManager.getEpicById(printID));
-                        case 3 -> System.out.println(taskManager.getSubTaskById(printID));
-                    }
-                }
-                case 4 -> {
-                    System.out.println("Введите тип задачи: \n \n 1. Task \n 2. SubTask \n 3. Epic");
-                    switch (scanner.nextInt()) {
-                        case 1 ->
-                            taskManager.createTask(new Task("Тасочка1", "Доработать АС",
-                                    TaskStatus.NEW, null, (60 * 2), LocalDateTime.of(2023, Month.JANUARY,10,12,0)));
-                        case 2 -> {
-                            System.out.println("К какому Эпику относится подзадача?");
-                            Integer setEpic = scanner.nextInt();
-                            taskManager.createSubTask(new SubTask("Сабтаска1", "Техдолг Q1",
-                                    TaskStatus.NEW, null, (60 * 3), LocalDateTime.now().minusMonths(1), setEpic));
-                        }
-                        case 3 -> taskManager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null, (60 * 4), LocalDateTime.now().minusMonths(2), null));
-                    }
-                }
-                case 5 -> {
-                    System.out.println("Введите ID задачи");
-                    int ID = scanner.nextInt();
-                    System.out.println("Какую задачу обновить? \n 1. Task \n 2. SubTask \n 3. Epic");
-                    switch (scanner.nextInt()) {
-                        case 1 -> taskManager.updateTask(new Task("Новое название"
-                                , "Новое описание"
-                                , TaskStatus.IN_PROGRESS, ID,
-                                (24 * 3),
-                                LocalDateTime.now()));
-                        case 2 -> {
-                            System.out.println("К какому эпику присвоить?");
-                            Integer newEpicID = scanner.nextInt();
-                            taskManager.updateSubTask(new SubTask("Новое название"
-                                    , "Новое описание"
-                                    , TaskStatus.IN_PROGRESS
-                                    , ID
-                                    , (24 * 10)
-                                    , LocalDateTime.now()
-                                    , newEpicID));
-                        }
-                        case 3 -> taskManager.updateEpic(new Epic("Новое название"
-                                , "Новое описание"
-                                , ID,(24*4), LocalDateTime.now(), null));
-                    }
-                }
-                case 6 -> {
-                    System.out.println("Введите ID задачи");
-                    int deleteID = scanner.nextInt();
-                    System.out.println("Какую задачу удалить? \n \n 1. Task \n 2. SubTask \n 3. Epic");
-                    switch (scanner.nextInt()) {
-                        case 1 -> taskManager.deleteTaskById(deleteID);
-                        case 2 -> taskManager.deleteSubTaskById(deleteID);
-                        case 3 -> taskManager.deleteEpicById(deleteID);
-                    }
-                }
-                case 7 -> {
-                    System.out.println("По какому эпику получить подзадачи?");
-                    int epicSubtasksIds = scanner.nextInt();
-                    System.out.println(taskManager.getAllSubtasksByEpic(epicSubtasksIds).toString());
-                }
-                case 8 -> System.out.println(taskManager.getHistory().toString());
-                case 9 -> System.out.println(taskManager.getPrioritizedTasks());
-                case 0 -> System.exit(0);
-                default -> System.out.println("Такой команды нет");
-            }
-            printMenu();
-        }
-    }
+        //Тест для проверки записи на сервер>>>>
+        manager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null, 60 * 48, LocalDateTime.now().plusDays(5), null));
+        manager.getEpicById(1);
+        manager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 24, LocalDateTime.now().plusDays(3), 1));
+        manager.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, 60 * 12, LocalDateTime.now().plusDays(2)));
+        manager.createTask(new Task("Таск2", "Доработать АС2", TaskStatus.NEW, null, 60 * 24, LocalDateTime.now().plusDays(22)));
+        manager.getSubTaskById(2);
+        manager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 56, LocalDateTime.now().plusDays(4), 1));
+        // Тест для проверки записи из сервера>>>>
+        loadFromServer(URI.create("http://localhost:8078/register"));
 
-    private static void printMenu() {
-        System.out.println("""
-                 1. Получить список всех задач
-                 2. Удалить все задачи
-                 3. Получить задачу по идентификатору
-                 4. Создать задачу
-                 5. Обновить задачу
-                 6. Удалить задачу по идентификатору
-                 7. Получить Подзадачи по Эпику
-                 8. Посмотреть историю просмотров
-                 9. Посмотреть приоритизированные задачи
-                 0. Выход из программы
-                """);
     }
 }
