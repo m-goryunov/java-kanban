@@ -94,11 +94,12 @@ public class HttpTaskServer {
                     int id = parsePathId(pathId);
                     if (id != -1) {
                         try {
-                            if(readText(exchange).isEmpty()){
+                            Task fromJsonTask = gson.fromJson(readText(exchange), Task.class);
+
+                            if (readText(exchange).isEmpty()) {
                                 writeResponse(exchange, "Передан пустой запрос.", 400);
                                 return;
                             }
-                            Task fromJsonTask = gson.fromJson(readText(exchange), Task.class);
 
                             if (fromJsonTask.getId() == null) {
                                 taskManager.createTask(fromJsonTask);
@@ -159,17 +160,15 @@ public class HttpTaskServer {
                     String pathId = path.replaceFirst("/tasks/subtask/", "");
                     int id = parsePathId(pathId);
                     if (id != -1) {
-                        InputStream stream = exchange.getRequestBody();
-                        String request = new String(stream.readAllBytes(), DEFAULT_CHARSET);
 
                         try {
-                            SubTask fromJsonTask = gson.fromJson(request, SubTask.class);
+                            SubTask fromJsonTask = gson.fromJson(readText(exchange), SubTask.class);
 
-                            if (fromJsonTask.getId() == null || fromJsonTask.getName().isEmpty()) {
-                                writeResponse(exchange, "Поля задачи не могут быть пустым", 400);
+                            if (readText(exchange).isEmpty()) {
+                                writeResponse(exchange, "Передан пустой запрос.", 400);
                                 return;
                             }
-                            if (taskManager.getSubTaskById(id) == null) {
+                            if (fromJsonTask.getId() == null) {
                                 taskManager.createSubTask(fromJsonTask);
                                 System.out.println();
                                 writeResponse(exchange, "Задача с id " + id + " создана.", 200);
@@ -231,17 +230,15 @@ public class HttpTaskServer {
                     String pathId = path.replaceFirst("/tasks/epic/", "");
                     int id = parsePathId(pathId);
                     if (id != -1) {
-                        InputStream stream = exchange.getRequestBody();
-                        String request = new String(stream.readAllBytes(), DEFAULT_CHARSET);
-
                         try {
-                            Epic fromJsonTask = gson.fromJson(request, Epic.class);
+                            Epic fromJsonTask = gson.fromJson(readText(exchange), Epic.class);
 
-                            if (fromJsonTask.getId() == null || fromJsonTask.getName().isEmpty()) {
-                                writeResponse(exchange, "Поля задачи не могут быть пустым", 400);
+                            if (readText(exchange).isEmpty()) {
+                                writeResponse(exchange, "Передан пустой запрос.", 400);
                                 return;
                             }
-                            if (taskManager.getEpicById(id) == null) {
+
+                            if (fromJsonTask.getId() == null) {
                                 taskManager.createEpic(fromJsonTask);
                                 System.out.println(fromJsonTask);
                                 writeResponse(exchange, "Задача с id " + id + " создана.", 200);
@@ -273,13 +270,9 @@ public class HttpTaskServer {
         }
     }
 
-    /*private String readText(HttpExchange exchange) throws IOException {
-        InputStream stream = exchange.getRequestBody();
-        return new String(stream.readAllBytes(), DEFAULT_CHARSET);
-    }*/
 
     private String readText(HttpExchange h) throws IOException {
-        return new String(h.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+        return new String(h.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
     }
 
     private Endpoint getEndpoint(String path, String requestMethod) {

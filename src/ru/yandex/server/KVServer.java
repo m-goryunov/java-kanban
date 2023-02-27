@@ -45,8 +45,6 @@ public class KVServer {
                 }
 
                 if (!data.get(key).isEmpty() || data.get(key) != null) {
-                    Gson gson = Managers.getGson();
-                    //String data1 = gson.toJson();
                     sendText(exchange, data.get(key));
                     System.out.println("Значение для ключа " + key + " успешно выгружено!");
                     exchange.sendResponseHeaders(200, 0);
@@ -88,7 +86,7 @@ public class KVServer {
                 }
                 data.put(key, value);
                 System.out.println("Значение для ключа " + key + " успешно обновлено!");
-                System.out.println(data);
+                //System.out.println(data);
                 exchange.sendResponseHeaders(200, 0);
             } else {
                 System.out.println("/save ждёт POST-запрос, а получил: " + exchange.getRequestMethod());

@@ -8,77 +8,97 @@ import ru.yandex.server.KVTaskClient;
 import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.util.Managers;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HttpTaskManager extends FileBackedTaskManager {
 
-    private String url;
     private static final String TASKS = "Tasks";
     private static final String SUBTASKS = "SubTasks";
     private static final String EPICS = "Epics";
     private static final String HISTORY = "History";
-    Gson gson = Managers.getGson();
+    private final Gson gson = Managers.getGson();
+    private String url;
 
-    public HttpTaskManager(String url) {
+
+
+    public HttpTaskManager(String url, boolean load) {
         this.url = url;
+        if (load) {
+            loadFromServer();
+        }
     }
 
-    KVTaskClient client = new KVTaskClient(url);
+    public HttpTaskManager(String url) {
+        this(url, false);
+    }
+
+    private KVTaskClient client = new KVTaskClient(url);
 
 
     @Override
     protected void save() {
 
-        List<String> toStringed = new ArrayList<>();
+        String jsonTasks = gson.toJson(new ArrayList<>(tasks.values()));
+        client.put(TASKS, jsonTasks);
 
-        for (Task task : tasks.values()) {
-            toStringed.add(toString(tasks.get(task.getId())));
-        }
-        client.put(TASKS, gson.toJson(toStringed));
-        toStringed.clear();
+        String jsonSubTasks = gson.toJson(new ArrayList<>(subTasks.values()));
+        client.put(SUBTASKS, jsonSubTasks);
 
-        for (Epic epic : epics.values()) {
-            toStringed.add(toString(epics.get(epic.getId())));
-        }
-        client.put(EPICS, gson.toJson(toStringed));
-        toStringed.clear();
-
-        for (SubTask subTask : subTasks.values()) {
-            toStringed.add(toString(subTasks.get(subTask.getId())) + ", " + subTask.getEpicId().toString());
-        }
-        client.put(SUBTASKS, gson.toJson(toStringed));
-        toStringed.clear();
+        String jsonEpics = gson.toJson(new ArrayList<>(epics.values()));
+        client.put(EPICS, jsonEpics);
 
         if (!historyManager.getHistory().isEmpty()) {
-            client.put(HISTORY, gson.toJson(historyToString(historyManager)));
+            client.put(HISTORY, gson.toJson(historyToString(historyManager))); //это и так список id
         }
     }
 
-    @Override
-    protected String toString(Task task) {
-        return "[{" +
-                "name:" + task.getName() +
-                ",description:" + task.getDescription() +
-                ",status:" + task.getStatus() +
-                ",id:" + task.getId() +
-                ",type:" + task.getType() +
-                ",duration:" + task.getDuration() +
-                ",startTime:" + task.getStartTime() +
-                ",endTime:" + task.getEndTime() +
-                "}]";
+    private TaskManager loadFromServer() {
 
-    }
-
-    public TaskManager loadFromServer(String uri) {
-        TaskManager manager = Managers.getDefault();
-
+        HttpTaskManager manager = new HttpTaskManager("http://localhost:8078", false);
 
         List<Task> listTask = List.of(gson.fromJson(client.load(TASKS), Task[].class));
-        List<SubTask> listSubTask = List.of(gson.fromJson(client.load(TASKS), SubTask[].class));
-        List<Epic> listEpic = List.of(gson.fromJson(client.load(TASKS), Epic[].class));
-        List<Integer> listHistory = List.of(gson.fromJson(client.load(HISTORY), Integer.class));
+        List<SubTask> listSubTask = List.of(gson.fromJson(client.load(SUBTASKS), SubTask[].class));
+        List<Epic> listEpic = List.of(gson.fromJson(client.load(EPICS), Epic[].class));
+        String value = gson.fromJson(client.load(HISTORY), String.class);
+
+        for (Task task : listTask) {
+            manager.tasks.put(task.getId(), task);
+            manager.prioritized.add(task);
+        }
+
+        for (Epic epic : listEpic) {
+            epic = new Epic(epic.getName(), epic.getDescription(), epic.getId(), epic.getDuration(), epic.getStartTime(), epic.getEndTime());
+            manager.epics.put(epic.getId(), epic);
+        }
+
+        for (SubTask subTask : listSubTask) {
+            manager.subTasks.put(subTask.getId(), subTask);
+            manager.epics.get(subTask.getEpicId()).addRelatedSubtaskIds(subTask.getId());
+            manager.prioritized.add(subTask);
+        }
+
+
+        List<Integer> history = new ArrayList<>();
+        String[] values = value.split(",");
+        for (String s : values) {
+            history.add(Integer.parseInt(s));
+        }
+        List<Integer> IDs = List.copyOf(history);
+        for (Integer id : IDs) {
+            if (manager.tasks.containsKey(id)) {
+                manager.historyManager.add(manager.tasks.get(id));
+            } else if (manager.subTasks.containsKey(id)) {
+                manager.historyManager.add(manager.subTasks.get(id));
+            } else if (manager.epics.containsKey(id)) {
+                manager.historyManager.add(manager.epics.get(id));
+            }
+        }
+
+/*        System.out.println(manager.tasks);
+        System.out.println(manager.subTasks);
+        System.out.println(manager.epics);
+        System.out.println(manager.getHistory());*/
 
         return manager;
     }
