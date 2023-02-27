@@ -6,6 +6,7 @@ import ru.yandex.model.Task;
 import ru.yandex.model.TaskStatus;
 import ru.yandex.server.HttpTaskServer;
 import ru.yandex.server.KVServer;
+import ru.yandex.server.KVTaskClient;
 import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.util.Managers;
 
@@ -13,16 +14,16 @@ import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
 
-import static ru.yandex.taskmanager.impl.HttpTaskManager.loadFromServer;
 
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        TaskManager manager = Managers.getDefault();
         KVServer server = new KVServer();
         server.start();
+        TaskManager manager = Managers.getDefault();
+        //KVTaskClient taskClient = new KVTaskClient("http://localhost:8078");
 
         HttpTaskServer taskServer = new HttpTaskServer();
         taskServer.start();
@@ -36,7 +37,7 @@ public class Main {
         manager.getSubTaskById(2);
         manager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 56, LocalDateTime.now().plusDays(4), 1));
         // Тест для проверки записи из сервера>>>>
-        loadFromServer(URI.create("http://localhost:8078/register"));
+        //loadFromServer(URI.create("http://localhost:8078/register"));
 
     }
 }

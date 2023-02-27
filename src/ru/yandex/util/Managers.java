@@ -19,7 +19,7 @@ public class Managers {
     }
 
     public static TaskManager getDefault(){
-        return new HttpTaskManager(URI.create("http://localhost:8078/register"));
+        return new HttpTaskManager("http://localhost:8078");
     }
 
     public static HistoryManager getDefaultHistory(){

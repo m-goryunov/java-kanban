@@ -8,14 +8,16 @@ import java.net.http.HttpResponse;
 
 public class KVTaskClient {
 
-    private URI url;
+    private String url;
+    private final String API_TOKEN;
 
-    public KVTaskClient(URI url) {
+    public KVTaskClient(String url) {
         this.url = url;
+        this.API_TOKEN = getApiToken();
     }
 
 
-    public String getApiToken() {
+    private String getApiToken() {
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8078/register");
 
@@ -39,13 +41,13 @@ public class KVTaskClient {
     public void put(String key, String json) {
         //POST /save/<ключ>?API_TOKEN=
         HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8078/save/" + key + "/?API_TOKEN=" + getApiToken());
+        URI url1 = URI.create(url + "/save/" + key + "/?API_TOKEN=" + API_TOKEN);
 
         try {
             final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
             HttpRequest request = HttpRequest
                     .newBuilder()
-                    .uri(url)
+                    .uri(url1)
                     .POST(body)
                     .build();
 
@@ -60,11 +62,11 @@ public class KVTaskClient {
     public String load(String key) {
         //GET /load/<ключ>?API_TOKEN=
         HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8078/load/" + key + "/?API_TOKEN=" + getApiToken());
+        URI url1 = URI.create(url + "/load/" + key + "/?API_TOKEN=" + API_TOKEN);
 
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(url)
+                    .uri(url1)
                     .GET()
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

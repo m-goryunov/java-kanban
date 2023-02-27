@@ -29,7 +29,7 @@ public class HttpTaskServer {
     private Gson gson;
 
     public HttpTaskServer() throws IOException {
-        this(Managers.getDefaultBacked());
+        this(Managers.getDefault());
     }
 
     public HttpTaskServer(TaskManager taskManager) throws IOException {
@@ -93,19 +93,15 @@ public class HttpTaskServer {
                     String pathId = path.replaceFirst("/tasks/task/", "");
                     int id = parsePathId(pathId);
                     if (id != -1) {
-                        InputStream stream = exchange.getRequestBody();
-                        String request = new String(stream.readAllBytes(), DEFAULT_CHARSET);
-
                         try {
-                            Task fromJsonTask = gson.fromJson(request, Task.class);
-
-                            if (fromJsonTask.getId() == null || fromJsonTask.getName().isEmpty()) {
-                                writeResponse(exchange, "Поля задачи не могут быть пустым", 400);
+                            if(readText(exchange).isEmpty()){
+                                writeResponse(exchange, "Передан пустой запрос.", 400);
                                 return;
                             }
-                            if (taskManager.getTaskById(id) == null) {
+                            Task fromJsonTask = gson.fromJson(readText(exchange), Task.class);
+
+                            if (fromJsonTask.getId() == null) {
                                 taskManager.createTask(fromJsonTask);
-                                System.out.println();
                                 writeResponse(exchange, "Задача с id " + id + " создана.", 200);
                                 System.out.println(fromJsonTask);
                                 return;
@@ -275,6 +271,15 @@ public class HttpTaskServer {
         } finally {
             exchange.close();
         }
+    }
+
+    /*private String readText(HttpExchange exchange) throws IOException {
+        InputStream stream = exchange.getRequestBody();
+        return new String(stream.readAllBytes(), DEFAULT_CHARSET);
+    }*/
+
+    private String readText(HttpExchange h) throws IOException {
+        return new String(h.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
     }
 
     private Endpoint getEndpoint(String path, String requestMethod) {

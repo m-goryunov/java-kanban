@@ -5,6 +5,7 @@ import ru.yandex.model.Epic;
 import ru.yandex.model.SubTask;
 import ru.yandex.model.Task;
 import ru.yandex.server.KVTaskClient;
+import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.util.Managers;
 
 import java.net.URI;
@@ -13,14 +14,14 @@ import java.util.List;
 
 public class HttpTaskManager extends FileBackedTaskManager {
 
-    private URI url;
+    private String url;
     private static final String TASKS = "Tasks";
     private static final String SUBTASKS = "SubTasks";
     private static final String EPICS = "Epics";
     private static final String HISTORY = "History";
     Gson gson = Managers.getGson();
 
-    public HttpTaskManager(URI url) {
+    public HttpTaskManager(String url) {
         this.url = url;
     }
 
@@ -70,10 +71,8 @@ public class HttpTaskManager extends FileBackedTaskManager {
 
     }
 
-    public static HttpTaskManager loadFromServer(URI uri) {
-        HttpTaskManager manager = new HttpTaskManager(uri);
-        KVTaskClient client = new KVTaskClient(uri);
-        Gson gson = Managers.getGson();
+    public TaskManager loadFromServer(String uri) {
+        TaskManager manager = Managers.getDefault();
 
 
         List<Task> listTask = List.of(gson.fromJson(client.load(TASKS), Task[].class));
