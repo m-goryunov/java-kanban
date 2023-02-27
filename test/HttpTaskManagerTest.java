@@ -31,7 +31,9 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
     void DataEqualsTest() throws IOException {
         KVServer server = new KVServer();
         server.start();
-        TaskManager manager1 = Managers.getDefault();
+
+
+        HttpTaskManager manager = new HttpTaskManager("http://localhost:8078");
 
         manager.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null, 60 * 48, LocalDateTime.now().plusDays(5), null));
         manager.getEpicById(1);
@@ -41,7 +43,18 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
         manager.getSubTaskById(2);
         manager.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 56, LocalDateTime.now().plusDays(4), 1));
 
-        HttpTaskManager httpTaskManager1 = new HttpTaskManager("http://localhost:8078", true);
+
+        HttpTaskManager manager1 = new HttpTaskManager("http://localhost:8078", true);
+        manager1.createEpic(new Epic("Эпик1", "Темная тема в Пачке", null, 60 * 48, LocalDateTime.now().plusDays(5), null));
+        manager1.getEpicById(1);
+        manager1.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 24, LocalDateTime.now().plusDays(3), 1));
+        manager1.createTask(new Task("Таск1", "Доработать АС", TaskStatus.NEW, null, 60 * 12, LocalDateTime.now().plusDays(2)));
+        manager1.createTask(new Task("Таск2", "Доработать АС2", TaskStatus.NEW, null, 60 * 24, LocalDateTime.now().plusDays(22)));
+        manager1.getSubTaskById(2);
+        manager1.createSubTask(new SubTask("Сабтаска2", "Техдолг Q2", TaskStatus.NEW, null, 60 * 56, LocalDateTime.now().plusDays(4), 1));
+
+        server.stop();
+
 
         Assertions.assertEquals(manager.getAllTasks(), manager1.getAllTasks(),
                 "Список задач после выгрузки не совпададает");

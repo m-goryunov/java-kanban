@@ -20,13 +20,9 @@ public class HttpTaskManager extends FileBackedTaskManager {
     private final Gson gson = Managers.getGson();
     private String url;
 
-
-
     public HttpTaskManager(String url, boolean load) {
         this.url = url;
-        if (load) {
-            loadFromServer();
-        }
+        if (load) {loadFromServer();}
     }
 
     public HttpTaskManager(String url) {
