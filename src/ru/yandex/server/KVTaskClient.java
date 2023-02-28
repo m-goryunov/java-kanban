@@ -10,7 +10,7 @@ import java.net.http.HttpResponse;
 
 public class KVTaskClient {
 
-    private String url; //я совсем запутался, когда ставлю это поле в url1 ниже оно всё время null (а не "http://localhost:8078)", хотя я в .getDefault его указываю. Пытался проследить цепочку...
+    private String url; //я совсем запутался, когда ставлю это поле в url1 ниже оно всё время null (а не "http://localhost:8078)", хотя я в .getDefault его указываю.
     private final String API_TOKEN;
 
     public KVTaskClient(String url) {

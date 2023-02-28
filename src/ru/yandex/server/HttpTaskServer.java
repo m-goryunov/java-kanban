@@ -94,12 +94,13 @@ public class HttpTaskServer {
                     int id = parsePathId(pathId);
                     if (id != -1) {
                         try {
-                            Task fromJsonTask = gson.fromJson(readText(exchange), Task.class);
+                            String text = readText(exchange);
 
-                            if (readText(exchange).isEmpty()) {
+                            if (text.isEmpty()) {
                                 writeResponse(exchange, "Передан пустой запрос.", 400);
                                 return;
                             }
+                            Task fromJsonTask = gson.fromJson(text, Task.class);
 
                             if (fromJsonTask.getId() == null) {
                                 taskManager.createTask(fromJsonTask);
@@ -115,6 +116,7 @@ public class HttpTaskServer {
 
                         } catch (JsonSyntaxException e) {
                             writeResponse(exchange, "Получен некорректный JSON", 400);
+                            e.printStackTrace();
                             return;
                         }
                     } else {
@@ -162,12 +164,14 @@ public class HttpTaskServer {
                     if (id != -1) {
 
                         try {
-                            SubTask fromJsonTask = gson.fromJson(readText(exchange), SubTask.class);
+                            String text = readText(exchange);
 
-                            if (readText(exchange).isEmpty()) {
+                            if (text.isEmpty()) {
                                 writeResponse(exchange, "Передан пустой запрос.", 400);
                                 return;
                             }
+                            SubTask fromJsonTask = gson.fromJson(text, SubTask.class);
+
                             if (fromJsonTask.getId() == null) {
                                 taskManager.createSubTask(fromJsonTask);
                                 System.out.println();
@@ -231,12 +235,13 @@ public class HttpTaskServer {
                     int id = parsePathId(pathId);
                     if (id != -1) {
                         try {
-                            Epic fromJsonTask = gson.fromJson(readText(exchange), Epic.class);
+                            String text = readText(exchange);
 
-                            if (readText(exchange).isEmpty()) {
+                            if (text.isEmpty()) {
                                 writeResponse(exchange, "Передан пустой запрос.", 400);
                                 return;
                             }
+                            Epic fromJsonTask = gson.fromJson(text, Epic.class);
 
                             if (fromJsonTask.getId() == null) {
                                 taskManager.createEpic(fromJsonTask);

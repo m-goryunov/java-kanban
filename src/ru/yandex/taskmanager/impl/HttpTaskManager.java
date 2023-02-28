@@ -5,7 +5,6 @@ import ru.yandex.model.Epic;
 import ru.yandex.model.SubTask;
 import ru.yandex.model.Task;
 import ru.yandex.server.KVTaskClient;
-import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.util.Managers;
 
 import java.util.ArrayList;
@@ -49,9 +48,9 @@ public class HttpTaskManager extends FileBackedTaskManager {
         }
     }
 
-    private TaskManager loadFromServer() {
+    private void loadFromServer() {
 
-        HttpTaskManager manager = new HttpTaskManager("http://localhost:8078", false);
+        //HttpTaskManager manager = new HttpTaskManager("http://localhost:8078", false);
 
         List<Task> listTask = List.of(gson.fromJson(client.load(TASKS), Task[].class));
         List<SubTask> listSubTask = List.of(gson.fromJson(client.load(SUBTASKS), SubTask[].class));
@@ -59,19 +58,28 @@ public class HttpTaskManager extends FileBackedTaskManager {
         String value = gson.fromJson(client.load(HISTORY), String.class);
 
         for (Task task : listTask) {
-            manager.tasks.put(task.getId(), task);
-            manager.prioritized.add(task);
+            if (id < task.getId()) {
+                id = task.getId();
+            }
+            tasks.put(task.getId(), task);
+            prioritized.add(task);
         }
 
         for (Epic epic : listEpic) {
+            if (id < epic.getId()) {
+                id = epic.getId();
+            }
             epic = new Epic(epic.getName(), epic.getDescription(), epic.getId(), epic.getDuration(), epic.getStartTime(), epic.getEndTime());
-            manager.epics.put(epic.getId(), epic);
+            epics.put(epic.getId(), epic);
         }
 
         for (SubTask subTask : listSubTask) {
-            manager.subTasks.put(subTask.getId(), subTask);
-            manager.epics.get(subTask.getEpicId()).addRelatedSubtaskIds(subTask.getId());
-            manager.prioritized.add(subTask);
+            if (id < subTask.getId()) {
+                id = subTask.getId();
+            }
+            subTasks.put(subTask.getId(), subTask);
+            epics.get(subTask.getEpicId()).addRelatedSubtaskIds(subTask.getId());
+            prioritized.add(subTask);
         }
 
 
@@ -82,21 +90,14 @@ public class HttpTaskManager extends FileBackedTaskManager {
         }
         List<Integer> IDs = List.copyOf(history);
         for (Integer id : IDs) {
-            if (manager.tasks.containsKey(id)) {
-                manager.historyManager.add(manager.tasks.get(id));
-            } else if (manager.subTasks.containsKey(id)) {
-                manager.historyManager.add(manager.subTasks.get(id));
-            } else if (manager.epics.containsKey(id)) {
-                manager.historyManager.add(manager.epics.get(id));
+            if (tasks.containsKey(id)) {
+                historyManager.add(tasks.get(id));
+            } else if (subTasks.containsKey(id)) {
+                historyManager.add(subTasks.get(id));
+            } else if (epics.containsKey(id)) {
+                historyManager.add(epics.get(id));
             }
         }
-
-/*        System.out.println(manager.tasks);
-        System.out.println(manager.subTasks);
-        System.out.println(manager.epics);
-        System.out.println(manager.getHistory());*/
-
-        return manager;
     }
 
 }
