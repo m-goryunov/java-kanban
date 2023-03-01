@@ -1,15 +1,11 @@
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import ru.yandex.model.Epic;
 import ru.yandex.model.SubTask;
 import ru.yandex.model.Task;
 import ru.yandex.model.TaskStatus;
-import ru.yandex.server.HttpTaskServer;
 import ru.yandex.server.KVServer;
-import ru.yandex.taskmanager.TaskManager;
-import ru.yandex.taskmanager.impl.FileBackedTaskManager;
 import ru.yandex.taskmanager.impl.HttpTaskManager;
-import ru.yandex.taskmanager.impl.InMemoryTaskManager;
-import ru.yandex.util.Managers;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -24,6 +20,7 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
 
         KVServer server = new KVServer();
         server.start();
+
         HttpTaskManager manager = new HttpTaskManager("http://localhost:8078");
 
         manager.createEpic(new Epic("Test addNewEpic", "Test addNewEpic description", null, 60 * 48, null, null));

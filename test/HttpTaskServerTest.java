@@ -1,7 +1,6 @@
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.model.Epic;
 import ru.yandex.model.SubTask;
@@ -10,7 +9,6 @@ import ru.yandex.model.TaskStatus;
 import ru.yandex.server.HttpTaskServer;
 import ru.yandex.server.KVServer;
 import ru.yandex.taskmanager.TaskManager;
-import ru.yandex.taskmanager.impl.HttpTaskManager;
 import ru.yandex.util.Managers;
 
 import java.io.IOException;
