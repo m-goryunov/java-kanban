@@ -17,18 +17,19 @@ public class HttpTaskManager extends FileBackedTaskManager {
     private static final String EPICS = "Epics";
     private static final String HISTORY = "History";
     private final Gson gson = Managers.getGson();
-    private String url;
 
-    private KVTaskClient client = new KVTaskClient(url); // здесь приходит null
+    private KVTaskClient client;
+
 
 
     public HttpTaskManager(String url, boolean load) {
-        this.url = url;
+        this.client = new KVTaskClient(url);
         if (load) {loadFromServer();}
     }
 
     public HttpTaskManager(String url) {
         this(url, false);
+        this.client = new KVTaskClient(url);
     }
 
 
