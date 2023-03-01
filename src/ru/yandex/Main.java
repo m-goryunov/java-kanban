@@ -6,13 +6,11 @@ import ru.yandex.model.Task;
 import ru.yandex.model.TaskStatus;
 import ru.yandex.server.HttpTaskServer;
 import ru.yandex.server.KVServer;
-import ru.yandex.server.KVTaskClient;
 import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.taskmanager.impl.HttpTaskManager;
 import ru.yandex.util.Managers;
 
 import java.io.IOException;
-import java.net.URI;
 import java.time.LocalDateTime;
 
 

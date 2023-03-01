@@ -19,6 +19,8 @@ public class HttpTaskManager extends FileBackedTaskManager {
     private final Gson gson = Managers.getGson();
     private String url;
 
+    private KVTaskClient client = new KVTaskClient(url);
+
     public HttpTaskManager(String url, boolean load) {
         this.url = url;
         if (load) {loadFromServer();}
@@ -27,8 +29,6 @@ public class HttpTaskManager extends FileBackedTaskManager {
     public HttpTaskManager(String url) {
         this(url, false);
     }
-
-    private KVTaskClient client = new KVTaskClient(url);
 
 
     @Override
@@ -50,8 +50,6 @@ public class HttpTaskManager extends FileBackedTaskManager {
 
     private void loadFromServer() {
 
-        //HttpTaskManager manager = new HttpTaskManager("http://localhost:8078", false);
-
         List<Task> listTask = List.of(gson.fromJson(client.load(TASKS), Task[].class));
         List<SubTask> listSubTask = List.of(gson.fromJson(client.load(SUBTASKS), SubTask[].class));
         List<Epic> listEpic = List.of(gson.fromJson(client.load(EPICS), Epic[].class));
@@ -69,7 +67,6 @@ public class HttpTaskManager extends FileBackedTaskManager {
             if (id < epic.getId()) {
                 id = epic.getId();
             }
-            epic = new Epic(epic.getName(), epic.getDescription(), epic.getId(), epic.getDuration(), epic.getStartTime(), epic.getEndTime());
             epics.put(epic.getId(), epic);
         }
 
@@ -78,7 +75,6 @@ public class HttpTaskManager extends FileBackedTaskManager {
                 id = subTask.getId();
             }
             subTasks.put(subTask.getId(), subTask);
-            epics.get(subTask.getEpicId()).addRelatedSubtaskIds(subTask.getId());
             prioritized.add(subTask);
         }
 

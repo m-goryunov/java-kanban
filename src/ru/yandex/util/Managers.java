@@ -3,14 +3,12 @@ package ru.yandex.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ru.yandex.taskmanager.HistoryManager;
+import ru.yandex.taskmanager.TaskManager;
 import ru.yandex.taskmanager.impl.FileBackedTaskManager;
 import ru.yandex.taskmanager.impl.HttpTaskManager;
 import ru.yandex.taskmanager.impl.InMemoryHistoryManager;
-import ru.yandex.taskmanager.impl.InMemoryTaskManager;
-import ru.yandex.taskmanager.TaskManager;
 
 import java.io.File;
-import java.net.URI;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 
